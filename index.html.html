@@ -1,932 +1,834 @@
 <!DOCTYPE html>
-<html lang="ru" class="dark">
+<html lang="ru">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Тренажер фразовых глаголов | Units 1–5 & 22–39</title>
-    <script src="https://cdn.tailwindcss.com"></script>
-    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
-    <script>
-        tailwind.config = {
-            darkMode: 'class',
-            theme: {
-                extend: {
-                    fontFamily: { sans: ['Inter', 'sans-serif'] }
-                }
-            }
-        }
-    </script>
+    <title>Phrasal Verbs Interactive Trainer (Units 1-5 & 22-39)</title>
     <style>
-        body { font-family: 'Inter', sans-serif; }
-        .input-blank {
-            transition: all 0.2s ease;
+        :root {
+            --bg: #f8fafc;
+            --card: #ffffff;
+            --primary: #4f46e5;
+            --primary-hover: #4338ca;
+            --success: #16a34a;
+            --success-bg: #dcfce7;
+            --danger: #dc2626;
+            --danger-bg: #fee2e2;
+            --warning: #d97706;
+            --warning-bg: #fef3c7;
+            --text: #1e293b;
+            --text-muted: #64748b;
+            --border: #e2e8f0;
         }
-        .input-blank:focus {
-            outline: none;
-            box-shadow: 0 0 0 3px rgba(99, 102, 241, 0.35);
+        * { box-sizing: border-box; margin: 0; padding: 0; }
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Inter, sans-serif;
+            background-color: var(--bg);
+            color: var(--text);
+            line-height: 1.6;
+            padding: 20px 15px 60px;
         }
-        @keyframes popIn {
-            0% { transform: scale(0.96); opacity: 0; }
-            100% { transform: scale(1); opacity: 1; }
+        .container {
+            max-width: 920px;
+            margin: 0 auto;
+        }
+        header {
+            background: linear-gradient(135deg, #4f46e5 0%, #7c3aed 100%);
+            color: white;
+            padding: 28px 24px;
+            border-radius: 16px;
+            box-shadow: 0 10px 25px -5px rgba(79, 70, 229, 0.25);
+            margin-bottom: 24px;
+        }
+        header h1 {
+            font-size: 1.6rem;
+            font-weight: 800;
+            margin-bottom: 6px;
+        }
+        header p {
+            opacity: 0.9;
+            font-size: 0.95rem;
+        }
+        .controls-bar {
+            background: var(--card);
+            padding: 16px 20px;
+            border-radius: 12px;
+            border: 1px solid var(--border);
+            margin-bottom: 18px;
+            display: flex;
+            flex-wrap: wrap;
+            gap: 12px;
+            justify-content: space-between;
+            align-items: center;
+            box-shadow: 0 1px 3px rgba(0,0,0,0.04);
+        }
+        .set-selector, .tabs {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 8px;
+        }
+        .btn {
+            padding: 9px 15px;
+            border-radius: 8px;
+            border: 1px solid var(--border);
+            background: var(--card);
+            color: var(--text);
+            font-weight: 600;
+            font-size: 0.9rem;
+            cursor: pointer;
+            transition: all 0.15s ease;
+        }
+        .btn:hover {
+            border-color: var(--primary);
+            color: var(--primary);
+        }
+        .btn.active {
+            background: var(--primary);
+            color: white;
+            border-color: var(--primary);
+        }
+        .btn-primary {
+            background: var(--primary);
+            color: white;
+            border-color: var(--primary);
+        }
+        .btn-primary:hover {
+            background: var(--primary-hover);
+            color: white;
+        }
+        .btn-outline {
+            background: #f1f5f9;
+            border-color: #cbd5e1;
+        }
+        .stats-bar {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            background: #eef2ff;
+            border: 1px solid #c7d2fe;
+            color: #3730a3;
+            padding: 12px 18px;
+            border-radius: 10px;
+            margin-bottom: 20px;
+            font-weight: 600;
+            font-size: 0.95rem;
         }
         .question-card {
-            animation: popIn 0.2s ease-out forwards;
+            background: var(--card);
+            border: 1px solid var(--border);
+            border-radius: 12px;
+            padding: 18px 20px;
+            margin-bottom: 14px;
+            transition: all 0.2s ease;
+            box-shadow: 0 1px 2px rgba(0,0,0,0.03);
+        }
+        .question-card.correct {
+            border-color: var(--success);
+            background-color: #f0fdf4;
+        }
+        .question-card.incorrect {
+            border-color: var(--danger);
+            background-color: #fef2f2;
+        }
+        .q-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 10px;
+            font-size: 0.8rem;
+            color: var(--text-muted);
+        }
+        .unit-badge {
+            background: #f1f5f9;
+            padding: 3px 8px;
+            border-radius: 6px;
+            font-weight: 600;
+            color: #475569;
+        }
+        .sentence {
+            font-size: 1.05rem;
+            margin-bottom: 12px;
+            line-height: 1.7;
+        }
+        .ru-hint {
+            color: var(--primary);
+            font-weight: 600;
+            background: #eef2ff;
+            padding: 2px 7px;
+            border-radius: 5px;
+            font-size: 0.93rem;
+        }
+        .input-row {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 8px;
+            align-items: center;
+        }
+        .answer-input {
+            flex: 1;
+            min-width: 210px;
+            padding: 9px 13px;
+            border: 1.5px solid #cbd5e1;
+            border-radius: 8px;
+            font-size: 0.98rem;
+            outline: none;
+            transition: border-color 0.15s;
+        }
+        .answer-input:focus {
+            border-color: var(--primary);
+            box-shadow: 0 0 0 3px rgba(79, 70, 229, 0.12);
+        }
+        .btn-sm {
+            padding: 7px 12px;
+            font-size: 0.83rem;
+        }
+        .feedback {
+            margin-top: 10px;
+            font-size: 0.9rem;
+            font-weight: 600;
+            display: none;
+            padding: 8px 12px;
+            border-radius: 7px;
+        }
+        .feedback.show {
+            display: block;
+        }
+        .feedback.ok {
+            background: var(--success-bg);
+            color: var(--success);
+        }
+        .feedback.err {
+            background: var(--danger-bg);
+            color: var(--danger);
+        }
+        .footer-actions {
+            margin-top: 24px;
+            display: flex;
+            flex-wrap: wrap;
+            gap: 12px;
+            justify-content: center;
+            background: var(--card);
+            padding: 18px;
+            border-radius: 12px;
+            border: 1px solid var(--border);
+        }
+        @media (max-width: 600px) {
+            .controls-bar { flex-direction: column; align-items: stretch; }
+            .input-row { flex-direction: column; align-items: stretch; }
+            .answer-input { width: 100%; }
         }
     </style>
 </head>
-<body class="bg-slate-50 dark:bg-slate-950 text-slate-900 dark:text-slate-100 min-h-screen transition-colors duration-200">
-
-    <!-- Верхняя панель навигации и статистики -->
-    <header class="sticky top-0 z-30 bg-white/90 dark:bg-slate-900/90 backdrop-blur-md border-b border-slate-200 dark:border-slate-800 shadow-sm">
-        <div class="max-w-5xl mx-auto px-4 py-3">
-            <div class="flex flex-col md:flex-row md:items-center md:justify-between gap-3">
-                <div>
-                    <div class="flex items-center gap-2.5">
-                        <span class="inline-flex items-center justify-center w-9 h-9 rounded-xl bg-indigo-600 text-white font-bold text-lg shadow-sm">PV</span>
-                        <div>
-                            <h1 class="text-lg sm:text-xl font-extrabold tracking-tight text-slate-900 dark:text-white">
-                                Phrasal Verbs Trainer <span class="text-xs font-semibold px-2 py-0.5 rounded-full bg-indigo-100 dark:bg-indigo-900/60 text-indigo-700 dark:text-indigo-300 ml-1">В разнобое</span>
-                            </h1>
-                            <p class="text-xs text-slate-500 dark:text-slate-400">Полная база Units 1–5 и 22–39 (265 глаголов) • 5 тестов по 20 предложений</p>
-                        </div>
-                    </div>
-                </div>
-
-                <!-- Кнопки управления базой и темой -->
-                <div class="flex flex-wrap items-center gap-2">
-                    <div class="flex items-center bg-slate-100 dark:bg-slate-800 p-1 rounded-xl border border-slate-200 dark:border-slate-700 text-xs font-medium">
-                        <button onclick="switchPoolBatch(0)" id="batchBtn0" class="px-2.5 py-1.5 rounded-lg transition-all">Сет А (1–100)</button>
-                        <button onclick="switchPoolBatch(1)" id="batchBtn1" class="px-2.5 py-1.5 rounded-lg transition-all">Сет Б (101–200)</button>
-                        <button onclick="switchPoolBatch(2)" id="batchBtn2" class="px-2.5 py-1.5 rounded-lg transition-all">Сет В (201–265+)</button>
-                    </div>
-
-                    <button onclick="shuffleAllAndCreateTests()" class="inline-flex items-center gap-1.5 px-3 py-2 rounded-xl bg-indigo-600 hover:bg-indigo-500 active:bg-indigo-700 text-white text-xs sm:text-sm font-semibold shadow-sm transition-all" title="Случайно перемешать все 265 глаголов и создать новые 5 тестов по 20">
-                        <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 4v5h.582m15.356 2A8.001 8.001 0 004.582 9m0 0H9m11 11v-5h-.581m0 0a8.003 8.003 0 01-15.357-2m15.357 2H15"/></svg>
-                        <span>Перемешать всё</span>
-                    </button>
-
-                    <button onclick="toggleTheme()" class="p-2 rounded-xl bg-slate-100 dark:bg-slate-800 hover:bg-slate-200 dark:hover:bg-slate-700 text-slate-600 dark:text-slate-300 border border-slate-200 dark:border-slate-700 transition-all" title="Переключить тему">
-                        <svg id="themeIconSun" class="w-5 h-5 hidden dark:block text-amber-400" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 3v1m0 16v1m9-9h-1M4 12H3m15.364 6.364l-.707-.707M6.343 6.343l-.707-.707m12.728 0l-.707.707M6.343 17.657l-.707.707M16 12a4 4 0 11-8 0 4 4 0 018 0z"/></svg>
-                        <svg id="themeIconMoon" class="w-5 h-5 block dark:hidden text-slate-700" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M20.354 15.354A9 9 0 018.646 3.646 9.003 9.003 0 0012 21a9.003 9.003 0 008.354-5.646z"/></svg>
-                    </button>
-                </div>
-            </div>
-
-            <!-- Вкладки 5 тестов -->
-            <div class="mt-3 flex flex-wrap items-center justify-between gap-2 pt-2 border-t border-slate-200/70 dark:border-slate-800/70">
-                <div class="flex flex-wrap gap-1.5" id="testTabsContainer">
-                    <!-- Вкладки генерируются через JS -->
-                </div>
-
-                <!-- Счетчик текущего теста и общий -->
-                <div class="flex items-center gap-3 text-xs sm:text-sm font-semibold">
-                    <div class="px-3 py-1 rounded-lg bg-emerald-50 dark:bg-emerald-950/60 text-emerald-700 dark:text-emerald-300 border border-emerald-200 dark:border-emerald-800/60">
-                        Текущий тест: <span id="currentTestScore">0 / 20</span>
-                    </div>
-                    <div class="hidden sm:block px-3 py-1 rounded-lg bg-slate-100 dark:bg-slate-800 text-slate-700 dark:text-slate-300">
-                        Всего (5 тестов): <span id="totalTestsScore">0 / 100</span>
-                    </div>
-                </div>
-            </div>
-
-            <!-- Прогресс-бар текущего теста -->
-            <div class="w-full h-1.5 bg-slate-200 dark:bg-slate-800 rounded-full overflow-hidden mt-2.5">
-                <div id="testProgressBar" class="h-full bg-gradient-to-r from-indigo-500 to-emerald-500 transition-all duration-300" style="width: 0%"></div>
-            </div>
-        </div>
+<body>
+<div class="container">
+    <header>
+        <h1>🇬🇧 Тренажер фразовых глаголов (Units 1–5 & 22–39)</h1>
+        <p>Полная база из 265 фразовых глаголов и выражений в абсолютном разнобое. 5 тестов по 20 вопросов в каждом наборе!</p>
     </header>
 
-    <!-- Основной контент -->
-    <main class="max-w-5xl mx-auto px-4 py-6">
-        
-        <!-- Информационная плашка-подсказка -->
-        <div class="mb-6 p-4 rounded-2xl bg-indigo-50/80 dark:bg-indigo-950/40 border border-indigo-200/80 dark:border-indigo-800/60 flex flex-col sm:flex-row sm:items-center justify-between gap-4">
-            <div class="text-xs sm:text-sm text-slate-700 dark:text-slate-300 space-y-1">
-                <p class="font-semibold text-indigo-900 dark:text-indigo-200 flex items-center gap-1.5">
-                    <svg class="w-4 h-4 text-indigo-600 dark:text-indigo-400 shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 16h-1v-4h-1m1-4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z"/></svg>
-                    Как вводить ответы:
-                </p>
-                <p class="text-slate-600 dark:text-slate-400">
-                    Засчитывается как <b>начальная форма из словаря</b> (напр. <code class="px-1.5 py-0.5 rounded bg-white dark:bg-slate-800 text-indigo-600 dark:text-indigo-300">call off</code>, <code class="px-1.5 py-0.5 rounded bg-white dark:bg-slate-800 text-indigo-600 dark:text-indigo-300">ask out</code>), так и <b>грамматическая форма по контексту</b> (<code class="px-1.5 py-0.5 rounded bg-white dark:bg-slate-800 text-indigo-600 dark:text-indigo-300">called off</code>, <code class="px-1.5 py-0.5 rounded bg-white dark:bg-slate-800 text-indigo-600 dark:text-indigo-300">ask her out</code>). Нажмите <b>Enter</b> для мгновенной проверки!
-                </p>
-            </div>
-            
-            <!-- Панель действий для текущего теста -->
-            <div class="flex flex-wrap sm:flex-nowrap items-center gap-2 shrink-0">
-                <button onclick="checkAllInCurrentTest()" class="px-3.5 py-2 rounded-xl bg-emerald-600 hover:bg-emerald-500 text-white text-xs font-semibold shadow-sm transition-all">
-                    Проверить все (20)
-                </button>
-                <button onclick="revealAllInCurrentTest()" class="px-3.5 py-2 rounded-xl bg-amber-600 hover:bg-amber-500 text-white text-xs font-semibold shadow-sm transition-all">
-                    Показать ответы
-                </button>
-                <button onclick="resetCurrentTest()" class="px-3 py-2 rounded-xl bg-slate-200 dark:bg-slate-800 hover:bg-slate-300 dark:hover:bg-slate-700 text-slate-700 dark:text-slate-300 text-xs font-semibold transition-all">
-                    Сбросить тест
-                </button>
-            </div>
+    <div class="controls-bar">
+        <div class="set-selector" id="batchSelector">
+            <button class="btn active" onclick="selectBatch(0)">Сет А (1–100)</button>
+            <button class="btn" onclick="selectBatch(1)">Сет Б (101–200)</button>
+            <button class="btn" onclick="selectBatch(2)">Сет В (201–265)</button>
         </div>
-
-        <!-- Контейнер для карточек вопросов (20 штук) -->
-        <div id="questionsContainer" class="space-y-4">
-            <!-- Карточки рендерятся динамически -->
+        <div style="display:flex; gap:8px;">
+            <button class="btn btn-outline" onclick="shuffleAll()">🔀 Перемешать всё</button>
+            <button class="btn btn-outline" onclick="resetCurrentTest()">🔄 Сбросить тест</button>
         </div>
+    </div>
 
-        <!-- Нижняя навигация между тестами -->
-        <div class="mt-8 pt-6 border-t border-slate-200 dark:border-slate-800 flex flex-wrap items-center justify-between gap-4">
-            <button onclick="prevTest()" id="prevTestBtn" class="inline-flex items-center gap-2 px-4 py-2.5 rounded-xl bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 hover:bg-slate-100 dark:hover:bg-slate-800 text-sm font-semibold shadow-sm transition-all">
-                <span>← Предыдущий тест</span>
-            </button>
-            <div class="text-xs text-slate-500 dark:text-slate-400 font-medium" id="bottomTestIndicator">
-                Тест 1 из 5
+    <div class="controls-bar" style="padding: 12px 20px;">
+        <div class="tabs" id="testTabs">
+            <button class="btn active" onclick="selectTest(0)">Тест 1 (1–20)</button>
+            <button class="btn" onclick="selectTest(1)">Тест 2 (21–40)</button>
+            <button class="btn" onclick="selectTest(2)">Тест 3 (41–60)</button>
+            <button class="btn" onclick="selectTest(3)">Тест 4 (61–80)</button>
+            <button class="btn" onclick="selectTest(4)">Тест 5 (81–100)</button>
+        </div>
+    </div>
+
+    <div class="stats-bar">
+        <span id="testTitle">Сет А — Тест 1</span>
+        <span id="scoreDisplay">Правильно: 0 / 20</span>
+    </div>
+
+    <div id="questionsContainer"></div>
+
+    <div class="footer-actions">
+        <button class="btn btn-primary" onclick="checkAllInTest()">✅ Проверить весь тест</button>
+        <button class="btn btn-outline" onclick="showAllAnswersInTest()">👀 Показать ответы теста</button>
+        <button class="btn btn-outline" onclick="window.scrollTo({top:0, behavior:'smooth'})">⬆️ Наверх</button>
+    </div>
+</div>
+
+<script>
+const MASTER_DB = [
+    // UNIT 1
+    {u:"Unit 1", s:"He finally plucked up the courage to ___ her ___ for dinner.", ru:"пригласить на свидание", a:["ask out", "ask her out"]},
+    {u:"Unit 1", s:"Our washing machine ___ yesterday, flooding the kitchen.", ru:"сломаться", a:["broke down", "break down"]},
+    {u:"Unit 1", s:"Looking at these old photos always ___ happy memories.", ru:"воскрешать в памяти", a:["brings back", "bring back"]},
+    {u:"Unit 1", s:"Please don't ___ the subject of politics at the dinner table.", ru:"поднять тему", a:["bring up"]},
+    {u:"Unit 1", s:"They had to ___ the open-air concert because of the storm.", ru:"отменить", a:["call off"]},
+    {u:"Unit 1", s:"While cleaning the attic, I ___ my old school diary.", ru:"случайно натолкнуться", a:["came across", "come across"]},
+    {u:"Unit 1", s:"The researchers ___ fierce opposition when they published their report.", ru:"сталкиваться с трудностями", a:["came up against", "come up against"]},
+    {u:"Unit 1", s:"Many countries have decided to ___ paper tickets altogether.", ru:"покончить с чем-то, избавиться от", a:["do away with"]},
+    {u:"Unit 1", s:"We are too tired to cook tonight, so let's ___.", ru:"есть вне дома / в ресторане", a:["eat out"]},
+    {u:"Unit 1", s:"He cheated on the exam and thought he could ___ it.", ru:"сойти с рук, остаться безнаказанным", a:["get away with"]},
+    {u:"Unit 1", s:"How long has Sarah been ___ Tom?", ru:"встречаться с кем-либо", a:["going out with", "go out with"]},
+    {u:"Unit 1", s:"Could you ___ my cat while I'm away on holiday?", ru:"заботиться, присматривать", a:["look after"]},
+    {u:"Unit 1", s:"She tends to ___ anyone who hasn't been to university.", ru:"смотреть свысока", a:["look down on"]},
+    {u:"Unit 1", s:"We are really ___ seeing you next month!", ru:"ждать с нетерпением", a:["looking forward to", "look forward to"]},
+    {u:"Unit 1", s:"Young athletes often ___ Olympic champions as role models.", ru:"уважать, брать пример", a:["look up to"]},
+    {u:"Unit 1", s:"Stop ___ and help me pack these boxes!", ru:"бездельничать, валять дурака", a:["messing about", "messing around", "mess about", "mess around"]},
+    {u:"Unit 1", s:"My laptop has been ___ all morning; the screen keeps freezing.", ru:"барахлить (о технике)", a:["playing up", "play up"]},
+    {u:"Unit 1", s:"Never ___ until tomorrow what you can do today.", ru:"откладывать на потом", a:["put off"]},
+    {u:"Unit 1", s:"I don't know how you ___ such noisy neighbours.", ru:"мириться с, терпеть", a:["put up with"]},
+    {u:"Unit 1", s:"I'm in a meeting right now; can I ___ you ___ later?", ru:"перезвонить", a:["ring back", "ring you back"]},
+    {u:"Unit 1", s:"Don't forget to ___ the application form before Friday.", ru:"отослать, отправить (почтой)", a:["send off"]},
+    {u:"Unit 1", s:"We need to ___ the visa problem before booking our flights.", ru:"разобраться с, уладить", a:["sort out"]},
+    {u:"Unit 1", s:"The police officer ___ every word the witness said.", ru:"записать, законспектировать", a:["took down", "noted down", "take down", "note down"]},
+    {u:"Unit 1", s:"We waited for an hour, but he never ___.", ru:"появиться, прийти", a:["turned up", "turn up"]},
+
+    // UNIT 2
+    {u:"Unit 2", s:"The manager simply ___ all our complaints and refused to listen.", ru:"отмахнуться от, проигнорировать", a:["brushed aside", "brush aside"]},
+    {u:"Unit 2", s:"I need to ___ the suppliers because our order is two weeks late.", ru:"напоминать, подгонять", a:["chase up"]},
+    {u:"Unit 2", s:"If you don't pay the electricity bill, they will ___ your power.", ru:"отрезать, отключить", a:["cut off"]},
+    {u:"Unit 2", s:"The doctor advised him to ___ sugary drinks completely.", ru:"вырезать; исключить", a:["cut out"]},
+    {u:"Unit 2", s:"You don't need to ___ for the party; it's very casual.", ru:"наряжаться", a:["dress up"]},
+    {u:"Unit 2", s:"Thousands of gullible tourists ___ that street scam every year.", ru:"клюнуть/повестись на уловку", a:["fall for", "fell for"]},
+    {u:"Unit 2", s:"We're hoping to ___ to the coast for a few days this weekend.", ru:"выбраться, уехать в отпуск", a:["get away"]},
+    {u:"Unit 2", s:"It took her nearly a month to ___ that terrible flu.", ru:"оправиться от, пережить", a:["get over"]},
+    {u:"Unit 2", s:"Accepting that bribe would ___ everything I believe in.", ru:"идти вразрез с, противоречить", a:["go against"]},
+    {u:"Unit 2", s:"House prices have finally started to ___ this quarter.", ru:"снижаться, падать", a:["go down"]},
+    {u:"Unit 2", s:"Let's ___ the contract clauses one more time before signing.", ru:"тщательно просматривать", a:["go through"]},
+    {u:"Unit 2", s:"If you ___ interrupting me, I'll never finish the story.", ru:"продолжать делать что-либо", a:["keep on"]},
+    {u:"Unit 2", s:"Check the guest list to make sure we haven't ___ anyone.", ru:"пропускать, упускать", a:["left out", "leave out"]},
+    {u:"Unit 2", s:"I could barely ___ the road signs through the thick fog.", ru:"разобрать, различить", a:["make out"]},
+    {u:"Unit 2", s:"She ___ conversational Spanish while working in Madrid.", ru:"нахвататься (знаний); забрать", a:["picked up", "pick up"]},
+    {u:"Unit 2", s:"It took firefighters three hours to ___ the warehouse blaze.", ru:"потушить (огонь)", a:["put out"]},
+    {u:"Unit 2", s:"You relax with the guests while I ___ the drinks.", ru:"позаботиться о, заняться чем-то", a:["see to"]},
+    {u:"Unit 2", s:"Please ___ the television before you go to bed.", ru:"выключить", a:["turn off"]},
+
+    // UNIT 3
+    {u:"Unit 3", s:"Why don't we ___ the new neighbours ___ for coffee this Sunday?", ru:"пригласить к себе в гости", a:["ask over", "invite over", "ask round", "invite round"]},
+    {u:"Unit 3", s:"We're going to the cinema tonight—feel free to ___ your brother ___.", ru:"пригласить пойти вместе", a:["ask along", "invite along"]},
+    {u:"Unit 3", s:"When he dropped her off at the entrance, she ___ him ___ for a cup of tea.", ru:"пригласить подняться к себе в квартиру", a:["asked up", "invited up", "ask up", "invite up"]},
+    {u:"Unit 3", s:"The dinner was wonderful; we must ___ them ___ soon.", ru:"пригласить снова", a:["ask back"]},
+    {u:"Unit 3", s:"The retiring CEO will formally ___ control to his successor in May.", ru:"передать (власть, вещи)", a:["hand over"]},
+    {u:"Unit 3", s:"Did you really win the lottery, or are you just ___ me ___?", ru:"разыгрывать кого-либо", a:["having on", "having me on", "have on"]},
+    {u:"Unit 3", s:"Do you ___ anything ___ this Friday evening, or are you free?", ru:"иметь запланированные дела / носить одежду", a:["have on", "have anything on"]},
+    {u:"Unit 3", s:"Could you quickly ___ my essay and check for typos?", ru:"бегло просмотреть, проверить", a:["look over"]},
+    {u:"Unit 3", s:"The police car flashed its lights and signaled the driver to ___.", ru:"съехать на обочину и остановиться", a:["pull over"]},
+    {u:"Unit 3", s:"Let's ___ to that small island near the shore.", ru:"переплыть", a:["swim over"]},
+    {u:"Unit 3", s:"A large tech conglomerate is planning to ___ the startup.", ru:"взять на себя управление/руководство", a:["take over"]},
+    {u:"Unit 3", s:"It's a major career change, so take the weekend to ___ it ___.", ru:"обдумать, взвесить", a:["think over", "think it over"]},
+
+    // UNIT 4
+    {u:"Unit 4", s:"Following the ___ at the museum, security was tightened.", ru:"незаконное проникновение, взлом", a:["break-in", "break in"]},
+    {u:"Unit 4", s:"Fortunately, no innocent ___ was injured during the police chase.", ru:"свидетель, очевидец", a:["bystander"]},
+    {u:"Unit 4", s:"Hospital services suffered due to a severe budget ___.", ru:"сокращение (расходов/штата)", a:["cutback"]},
+    {u:"Unit 4", s:"He started out as a college ___ and later founded a billion-dollar company.", ru:"недоучка, бросивший учебу", a:["dropout"]},
+    {u:"Unit 4", s:"Detectives discovered the gang's secret ___ in the mountains.", ru:"укрытие, убежище", a:["hideout"]},
+    {u:"Unit 4", s:"Sunday is the only day of the week I can enjoy a proper ___.", ru:"долгое валяние в постели по утрам", a:["lie-in", "lie in"]},
+    {u:"Unit 4", s:"Ten dollars for a small bottle of water is an absolute ___!", ru:"грабёж, обдираловка", a:["rip-off", "rip off"]},
+    {u:"Unit 4", s:"Nobody likes playing tennis with him because he's such a ___.", ru:"хвастун, позёр", a:["show-off", "show off"]},
+    {u:"Unit 4", s:"Always do a ten-minute ___ before lifting heavy weights.", ru:"разминка", a:["warm-up", "warm up"]},
+    {u:"Unit 4", s:"I can hardly breathe through my nose—it's completely ___.", ru:"засорённый, заложенный", a:["blocked-up", "blocked up"]},
+    {u:"Unit 4", s:"An old ___ tractor stood rusting in the middle of the barn.", ru:"сломанный, вышедший из строя", a:["broken-down", "broken down"]},
+    {u:"Unit 4", s:"We called a ___ truck to tow our car to the nearest garage.", ru:"поломка; аварийный", a:["breakdown"]},
+    {u:"Unit 4", s:"Investigative journalists exposed a massive government ___.", ru:"укрывательство, сокрытие правды", a:["cover-up", "cover up"]},
+    {u:"Unit 4", s:"The neighbours reported strange ___ at the abandoned mansion at night.", ru:"странные дела, проделки", a:["goings-on", "goings on"]},
+    {u:"Unit 4", s:"We didn't cook today; we just heated up yesterday's ___.", ru:"остатки еды", a:["leftovers"]},
+    {u:"Unit 4", s:"One thief acted as a ___ while the others cracked the safe.", ru:"наблюдатель, дозорный", a:["lookout"]},
+    {u:"Unit 4", s:"A curious ___ stopped to film the street performer on his phone.", ru:"зритель, зевака", a:["onlooker"]},
+    {u:"Unit 4", s:"The proposed tax hike provoked a huge public ___.", ru:"общественный протест, буря возмущения", a:["outcry"]},
+    {u:"Unit 4", s:"His sarcastic comment was meant as a cruel ___ in front of her peers.", ru:"унизительное замечание, колкость", a:["put-down", "put down"]},
+    {u:"Unit 4", s:"Let's do one final ___ of the presentation before the client arrives.", ru:"прогон, репетиция", a:["run-through", "run through"]},
+
+    // UNIT 5
+    {u:"Unit 5", s:"The lecture was so dense that I couldn't ___ all the details.", ru:"усваивать; обманывать; приютить", a:["take in"]},
+    {u:"Unit 5", s:"The referee had to ___ to separate the two angry players.", ru:"вмешаться, прийти на помощь", a:["step in"]},
+    {u:"Unit 5", s:"After twelve hours at the office, I find it hard to ___ mentally.", ru:"выключить; отключиться (мыслями)", a:["switch off"]},
+    {u:"Unit 5", s:"He prefers freelancing because he doesn't want a mortgage to ___ him ___.", ru:"привязать; связывать обязательствами", a:["tie down", "tie him down"]},
+    {u:"Unit 5", s:"Elite private schools often ___ the brightest students in the region.", ru:"снимать сливки; отбирать лучшее", a:["cream off"]},
+    {u:"Unit 5", s:"Road safety rules were ___ us from a very young age.", ru:"вдалбливать, внушать", a:["drummed into", "drum into"]},
+    {u:"Unit 5", s:"I don't quite follow your argument—what exactly are you ___?", ru:"клонить к чему-либо, намекать", a:["driving at", "drive at"]},
+    {u:"Unit 5", s:"The roar of the passing train completely ___ her voice.", ru:"заглушать (звук)", a:["drowned out", "drown out"]},
+    {u:"Unit 5", s:"Once the holidays are over, we must ___ revising for the finals.", ru:"всерьез приняться за дело", a:["get down to"]},
+
+    // UNIT 22
+    {u:"Unit 22", s:"I'd love to chat, but I'm really ___ for time right now.", ru:"быть в цейтноте, не иметь времени", a:["pressed", "pushed", "be pressed for time", "be pushed for time", "pressed for time", "pushed for time"]},
+    {u:"Unit 22", s:"They decided to ___ the meeting from Friday to Wednesday.", ru:"перенести на более ранний срок", a:["bring forward"]},
+    {u:"Unit 22", s:"Factory workers have to ___ at 7:00 AM sharp.", ru:"отмечать время прихода на работу", a:["clock in", "clock on"]},
+    {u:"Unit 22", s:"Most of the staff ___ at 5:30 PM on Fridays.", ru:"отмечать время ухода с работы", a:["clock off", "clock out"]},
+    {u:"Unit 22", s:"My schedule is packed, but I can ___ you ___ for twenty minutes at noon.", ru:"выкроить время", a:["fit in", "fit you in"]},
+    {u:"Unit 22", s:"___ a second—I'll check if Ms. Evans is in her office.", ru:"подождать немного", a:["hang on"]},
+    {u:"Unit 22", s:"Teenagers in this town usually ___ at the skate park after school.", ru:"тусоваться, проводить время", a:["hang out"]},
+    {u:"Unit 22", s:"At the party, he ___ me and wouldn't leave me alone all evening.", ru:"увязаться за кем-то; ухватиться за идею", a:["latched on to", "latch on to"]},
+    {u:"Unit 22", s:"If you keep ___ in the lab, you'll break the equipment.", ru:"бездельничать, валять дурака", a:["mucking about", "muck about"]},
+    {u:"Unit 22", s:"Despite the heavy rain, the hikers decided to ___ to the summit.", ru:"упорно продолжать, двигаться вперед", a:["press on"]},
+    {u:"Unit 22", s:"My passport is about to ___, so I need to renew it urgently.", ru:"иссякать, заканчиваться", a:["run out"]},
+    {u:"Unit 22", s:"You look exhausted; why don't you ___ some ___ next week?", ru:"взять отгул / отпуск", a:["take time off", "take off"]},
+    {u:"Unit 22", s:"We ___ the afternoon playing cards on the veranda.", ru:"коротать время", a:["whiled away", "while away"]},
+
+    // UNIT 23
+    {u:"Unit 23", s:"The museum exhibits carriages from a ___ era.", ru:"прошлый, минувший", a:["bygone"]},
+    {u:"Unit 23", s:"The foundations of this castle ___ to the twelfth century.", ru:"датироваться, восходить к", a:["date back", "date back to"]},
+    {u:"Unit 23", s:"The board meeting ___ for nearly four hours without a break.", ru:"затягиваться, тянуться бесконечно", a:["dragged on", "drag on"]},
+    {u:"Unit 23", s:"Fog at the airport ___ several international flights.", ru:"задерживать", a:["held up", "hold up"]},
+    {u:"Unit 23", s:"___ or we're going to miss the opening scene of the play!", ru:"торопить(ся)", a:["hurry up"]},
+    {u:"Unit 23", s:"As the years ___, we grew more appreciative of our hometown.", ru:"идти, проходить (о времени)", a:["went by", "go by"]},
+    {u:"Unit 23", s:"It's hard to ___ all the rapid changes in artificial intelligence.", ru:"идти в ногу со временем, не отставать", a:["keep up with"]},
+    {u:"Unit 23", s:"Graduating is exciting, though many tough challenges ___.", ru:"предстоять в будущем", a:["lie ahead"]},
+    {u:"Unit 23", s:"He never lets a good business opportunity ___.", ru:"проходить мимо", a:["pass by"]},
+    {u:"Unit 23", s:"If the speaker's Q&A session ___, we'll be late for lunch.", ru:"затянуться сверх нормы", a:["runs on", "run on"]},
+    {u:"Unit 23", s:"The smell of pine needles always ___ me ___ to childhood Christmases.", ru:"мысленно возвращать в прошлое", a:["takes back", "takes me back", "take back"]},
+    {u:"Unit 23", s:"Whenever I ___ to my first day at school, I smile.", ru:"вспоминать, оглядываться назад", a:["think back", "think back to"]},
+
+    // UNIT 24
+    {u:"Unit 24", s:"During heavy winter snowstorms, the mountain village ___ from the rest of the world.", ru:"быть отрезанным от", a:["is cut off", "be cut off", "is cut off from", "be cut off from", "cut off"]},
+    {u:"Unit 24", s:"Tiny stone cottages ___ the green hillside.", ru:"быть разбросанным по округе", a:["are dotted around", "be dotted around", "dotted around"]},
+    {u:"Unit 24", s:"The cosy little café ___ in a quiet cobbled courtyard.", ru:"быть спрятанным в укромном месте", a:["is tucked away", "be tucked away", "tucked away"]},
+    {u:"Unit 24", s:"Fresh yellow curtains will really ___ this dark hallway.", ru:"оживлять, преображать", a:["brighten up"]},
+    {u:"Unit 24", s:"The shop owner wasn't there, so I promised to ___ after lunch.", ru:"зайти снова, навестить повторно", a:["call back"]},
+    {u:"Unit 24", s:"When checking out of the hotel, make sure you don't ___ your charger ___.", ru:"оставить позади", a:["leave behind"]},
+    {u:"Unit 24", s:"The French windows in the living room ___ a sunlit conservatory.", ru:"выходить в, открываться в", a:["open into", "opened into"]},
+    {u:"Unit 24", s:"After the lecture ended, a few students ___ to ask the professor questions.", ru:"остаться, задержаться", a:["stayed behind", "stay behind"]},
+    {u:"Unit 24", s:"It's pouring with rain tonight; I'd rather ___ and watch a movie.", ru:"оставаться дома", a:["stay in"]},
+    {u:"Unit 24", s:"She loved Vienna so much that she decided to ___ for an extra week.", ru:"задерживаться дольше положенного", a:["stay on"]},
+    {u:"Unit 24", s:"His parents don't allow him to ___ past midnight on weekdays.", ru:"гулять допоздна, не возвращаться домой", a:["stay out"]},
+    {u:"Unit 24", s:"Golden wheat fields ___ towards the distant horizon.", ru:"простираться вдаль", a:["stretched away", "stretch away"]},
+
+    // UNIT 25
+    {u:"Unit 25", s:"The invention of the printing press ___ a cultural revolution.", ru:"приводить к, вызывать", a:["brought about", "bring about"]},
+    {u:"Unit 25", s:"Nobody truly knows what motives ___ his sudden resignation.", ru:"лежать в основе, быть истинной причиной", a:["lie behind", "lay behind"]},
+    {u:"Unit 25", s:"He swore he would ___ them ___ for humiliating him in public.", ru:"отомстить, отплатить той же монетой", a:["pay back", "pay them back"]},
+    {u:"Unit 25", s:"Doctors haven't yet ___ the possibility of an allergic reaction.", ru:"исключать", a:["ruled out", "rule out"]},
+    {u:"Unit 25", s:"Smoke from the burnt toast ___ the fire alarm in the corridor.", ru:"привести в действие / запустить", a:["set off"]},
+    {u:"Unit 25", s:"Just one mention of her ex-boyfriend ___ her ___ crying again.", ru:"заставить плакать/смеяться; вывести из себя", a:["set off", "set her off"]},
+    {u:"Unit 25", s:"The referee's controversial red card ___ a brawl in the stands.", ru:"спровоцировать, разжечь", a:["sparked off", "spark off"]},
+    {u:"Unit 25", s:"His fear of dogs ___ a frightening incident in early childhood.", ru:"проистекать из, брать начало", a:["springs from", "sprang from", "spring from"]},
+    {u:"Unit 25", s:"Tabloid newspapers often try to ___ panic among readers.", ru:"разжигать вражду, сеять смуту", a:["stir up"]},
+    {u:"Unit 25", s:"The sudden stock market crash ___ a wave of bankruptcies.", ru:"вызывать цепную реакцию", a:["triggered off", "trigger off"]},
+
+    // UNIT 26
+    {u:"Unit 26", s:"Their argument seems serious now, but it will soon ___.", ru:"улечься, пройти (о кризисе/ссоре)", a:["blow over"]},
+    {u:"Unit 26", s:"Our factory is planning to ___ from gas to solar energy next year.", ru:"переходить на другую систему", a:["change over"]},
+    {u:"Unit 26", s:"Arrive early because the auditorium ___ very quickly.", ru:"заполняться до краев", a:["fills up", "fill up"]},
+    {u:"Unit 26", s:"The debate began to ___ as the two candidates traded insults.", ru:"накаляться (о страстях/споре)", a:["heat up"]},
+    {u:"Unit 26", s:"After months of recession, the retail sector is finally ___.", ru:"улучшаться (о делах)", a:["looking up", "look up"]},
+    {u:"Unit 26", s:"Let's wait a month to see how the new marketing strategy ___.", ru:"складываться, удаваться", a:["pans out", "pan out"]},
+    {u:"Unit 26", s:"The new digital ID cards will be ___ over the next two years.", ru:"внедрять поэтапно", a:["phased in", "phase in"]},
+    {u:"Unit 26", s:"Single-use plastic bags are being ___ across the country.", ru:"постепенно выводить из употребления", a:["phased out", "phase out"]},
+    {u:"Unit 26", s:"Tourism usually ___ significantly when the summer holidays begin.", ru:"оживляться, набирать обороты", a:["picks up", "pick up"]},
+    {u:"Unit 26", s:"Don't change your workout routine now—___ it for at least eight weeks.", ru:"придерживаться прежнего плана", a:["stick with"]},
+    {u:"Unit 26", s:"Corporations must ___ the environmental impact of their supply chains.", ru:"осознать (реальное положение дел)", a:["wake up to"]},
+    {u:"Unit 26", s:"Once the painkiller ___, my tooth started aching again.", ru:"проходить, ослабевать (о лекарстве)", a:["wore off", "wear off"]},
+
+    // UNIT 27
+    {u:"Unit 27", s:"Our team hopes to ___ last season's championship victory.", ru:"опираться на достигнутое", a:["build on"]},
+    {u:"Unit 27", s:"It was a risky rescue mission, but the crew managed to ___ it ___.", ru:"успешно справиться с трудным делом", a:["bring off", "bring it off"]},
+    {u:"Unit 27", s:"Why did rollerblading ___ so quickly in the 1990s?", ru:"войти в моду, прижиться", a:["catch on"]},
+    {u:"Unit 27", s:"After missing two weeks of school, she worked hard to ___ with her classmates.", ru:"наверстать, догнать", a:["catch up"]},
+    {u:"Unit 27", s:"His bold bluff during the poker game actually ___.", ru:"увенчаться успехом, удаться", a:["came off", "come off"]},
+    {u:"Unit 27", s:"Greed and arrogance ultimately led to the dictator's ___.", ru:"крах, гибель, падение", a:["downfall"]},
+    {u:"Unit 27", s:"Where his proposal really ___ is on the question of funding.", ru:"оказаться уязвимым, провалиться", a:["falls down", "fall down"]},
+    {u:"Unit 27", s:"The house sale ___ because the buyer couldn't get a mortgage.", ru:"сорваться, не состояться", a:["fell through", "fall through"]},
+    {u:"Unit 27", s:"We didn't have a clear guide, so we just had to ___ as best we could.", ru:"кое-как справиться", a:["muddle through"]},
+    {u:"Unit 27", s:"All those months of rehearsals finally ___ on opening night.", ru:"окупиться, принести плоды", a:["paid off", "pay off"]},
+    {u:"Unit 27", s:"No one thought they could beat the champions, but they ___ it ___.", ru:"провернуть, блестяще выполнить", a:["pulled off", "pull off", "pulled it off"]},
+    {u:"Unit 27", s:"To ___ of the competition, we must invest heavily in research.", ru:"удерживать лидерство", a:["stay ahead"]},
+    {u:"Unit 27", s:"Right after graduation, he ___ a well-paid job at his uncle's firm.", ru:"легко заполучить (место/работу)", a:["walked into", "walk into"]},
+
+    // UNIT 28
+    {u:"Unit 28", s:"I'm trying to ___ on caffeine by drinking herbal tea in the afternoon.", ru:"сократить (расход, объём)", a:["cut down"]},
+    {u:"Unit 28", s:"After twenty minutes of awkward small talk, the conversation completely ___.", ru:"иссякнуть (об идеях/словах)", a:["dried up", "dry up"]},
+    {u:"Unit 28", s:"Let's ___ the remaining raspberry pie so it doesn't go to waste.", ru:"доделать до конца", a:["finish off"]},
+    {u:"Unit 28", s:"Initial enthusiasm for the fitness challenge soon ___.", ru:"сойти на нет, выдохнуться", a:["fizzled out", "fizzle out"]},
+    {u:"Unit 28", s:"From the very ___, the expedition was plagued by bad weather.", ru:"начало, отправная точка", a:["outset"]},
+    {u:"Unit 28", s:"It's almost 6 PM—time to ___ our tools and head home.", ru:"собрать вещи (после работы)", a:["pack up"]},
+    {u:"Unit 28", s:"The hungry kids ___ a whole tray of sandwiches in five minutes.", ru:"быстро расправиться с (едой/работой)", a:["polished off", "polish off"]},
+    {u:"Unit 28", s:"How should we ___ repairing the damaged roof?", ru:"приняться за, приступить к", a:["set about"]},
+    {u:"Unit 28", s:"In the first chapter, the author ___ her main philosophical arguments.", ru:"отправиться в путь; изложить идеи", a:["sets out", "set out"]},
+    {u:"Unit 28", s:"The company ___ as a tiny bookshop in 1998.", ru:"начинать(ся) определенным образом", a:["started off", "started out", "start off", "start out"]},
+    {u:"Unit 28", s:"Listening to classical music helps me ___ after a stressful shift.", ru:"расслабляться, сбавлять обороты", a:["wind down"]},
+
+    // UNIT 29
+    {u:"Unit 29", s:"Can you help me ___ fifty balloons for the birthday party?", ru:"надувать; взрывать(ся)", a:["blow up"]},
+    {u:"Unit 29", s:"The polite host ___ the elderly lady ___ with her heavy winter coat.", ru:"помочь надеть/снять (пальто/обувь)", a:["helped on", "helped off", "help on", "help off"]},
+    {u:"Unit 29", s:"Could you ___ a bit on the bench so I can sit down too?", ru:"подвинуться", a:["move over"]},
+    {u:"Unit 29", s:"If everyone ___ one seat, our group can sit together.", ru:"подвинуться вперед/ближе", a:["moves up", "move up"]},
+    {u:"Unit 29", s:"She ___ to the post office for ten minutes during her lunch break.", ru:"отлучиться ненадолго, выскочить", a:["popped out", "pop out"]},
+    {u:"Unit 29", s:"The toddler ___ to grab the colourful toy on the shelf.", ru:"протянуть руку; обратиться за поддержкой", a:["reached out", "reach out"]},
+    {u:"Unit 29", s:"All drivers must ___ when approaching a pedestrian crossing.", ru:"замедлить(ся), сбавить ход", a:["slow down", "slow up"]},
+    {u:"Unit 29", s:"Furious at the rejection letter, she ___ it ___ and threw it in the bin.", ru:"порвать в клочья", a:["tore up", "tear up", "tore it up"]},
+    {u:"Unit 29", s:"We just need to ___ a few legal details before signing the deal.", ru:"связать; уладить последние формальности", a:["tie up"]},
+    {u:"Unit 29", s:"Make sure you ___ warm before going outside in this freezing wind.", ru:"упаковать; укутаться; закругляться", a:["wrap up"]},
+
+    // UNIT 30
+    {u:"Unit 30", s:"We ___ to make our guests feel welcome, yet they still complained.", ru:"лезть из кожи вон, чтобы помочь", a:["bent over backwards", "bend over backwards"]},
+    {u:"Unit 30", s:"My cheap leather boots started to ___ after just one rainy month.", ru:"разваливаться на куски; расклеиться", a:["fall apart"]},
+    {u:"Unit 30", s:"When cornered, the underdog boxer began to ___ fiercely.", ru:"давать отпор, сопротивляться", a:["fight back"]},
+    {u:"Unit 30", s:"Be careful not to ___ that crystal vase with your elbow!", ru:"опрокинуть, сбить с ног", a:["knock over"]},
+    {u:"Unit 30", s:"The city council voted to ___ the unsafe concrete stadium.", ru:"снести (здание)", a:["pull down", "tear down"]},
+    {u:"Unit 30", s:"The new committee vowed to ___ corruption within the police force.", ru:"искоренить, уничтожить под корень", a:["root out", "stamp out"]},
+    {u:"Unit 30", s:"I completely ___ my driving test by stalling at the traffic lights.", ru:"скомкать; запороть, напортачить", a:["screwed up", "screw up"]},
+    {u:"Unit 30", s:"Her loyal friends ___ her ___ the toughest year of her life.", ru:"поддержать кого-либо в беде", a:["saw through", "see through", "saw her through"]},
+    {u:"Unit 30", s:"Injuring his knee in April was a major ___ to his Olympic dreams.", ru:"задержка, неудача, регресс", a:["setback"]},
+    {u:"Unit 30", s:"It ___ me ___ to see my two best friends fighting like enemies.", ru:"разорвать на части; терзать душу", a:["tears apart", "tear apart", "tore apart", "tears me apart"]},
+    {u:"Unit 30", s:"The guard dog suddenly ___ its trainer and bit his arm.", ru:"внезапно наброситься на, предать", a:["turned on", "turn on"]},
+
+    // UNIT 31
+    {u:"Unit 31", s:"The children were ___ with excitement on Christmas Eve.", ru:"кипеть, переливаться через край (об эмоциях)", a:["bubbling over", "bubble over"]},
+    {u:"Unit 31", s:"I wish you wouldn't ___ every time I'm trying to explain something!", ru:"бесцеремонно встревать в разговор", a:["butt in"]},
+    {u:"Unit 31", s:"Let's ___ the question of budget at the end of the meeting.", ru:"вернуться к (теме)", a:["come back to"]},
+    {u:"Unit 31", s:"Using simple diagrams helped the teacher ___ the physics concept ___.", ru:"донести смысл, четко объяснить", a:["get across"]},
+    {u:"Unit 31", s:"Once we finish the sales figures, we'll ___ staffing issues.", ru:"перейти к следующему вопросу", a:["get on to"]},
+    {u:"Unit 31", s:"I've warned him about his spending habits, but I just can't ___ to him.", ru:"достучаться до кого-то", a:["get through", "get through to"]},
+    {u:"Unit 31", s:"Please ___ the point—we only have ten minutes left.", ru:"придерживаться (плана, темы)", a:["keep to"]},
+    {u:"Unit 31", s:"___ cost for a moment, is the project technically feasible?", ru:"отложить в сторону, не касаться пока", a:["leaving aside", "leave aside"]},
+    {u:"Unit 31", s:"Nobody likes a team leader who ___ everyone ___ like servants.", ru:"помыкать, командовать", a:["orders about", "orders around", "order about", "order around"]},
+    {u:"Unit 31", s:"When you finish reading the memo, please ___ it ___ to your colleagues.", ru:"передать (информацию)", a:["pass on", "pass it on"]},
+    {u:"Unit 31", s:"Could you quickly ___ the safety procedures for the new interns?", ru:"бегло повторить, отрепетировать", a:["run through"]},
+    {u:"Unit 31", s:"Don't be afraid to ___ if you disagree with the committee's decision.", ru:"высказываться открыто; говорить громче", a:["speak up"]},
+    {u:"Unit 31", s:"Do I really have to ___ every single rule ___ for you?", ru:"разжевать, разъяснить по полочкам", a:["spell out"]},
+    {u:"Unit 31", s:"She ___ the job offer because the commute was too long.", ru:"отклонить, отказать", a:["turned down", "turn down"]},
+    {u:"Unit 31", s:"Whenever he faces a legal dilemma, he ___ his sister for advice.", ru:"обратиться к кому-то за советом/помощью", a:["turns to", "turn to"]},
+
+    // UNIT 32
+    {u:"Unit 32", s:"After the festival, the park grass ___ plastic cups and wrappers.", ru:"быть заваленным, усеянным мусором", a:["was littered with", "be littered with", "is littered with", "littered with"]},
+    {u:"Unit 32", s:"The new wooden cabin was designed to ___ with the forest surroundings.", ru:"сливаться, гармонировать", a:["blend in"]},
+    {u:"Unit 32", s:"They bought a Victorian cottage and spent a year ___ it ___.", ru:"застегнуть; отремонтировать/украсить", a:["doing up", "do up", "doing it up"]},
+    {u:"Unit 32", s:"After the long flight, I'd like to ___ before we go out to dinner.", ru:"освежиться, привести себя в порядок", a:["freshen up"]},
+    {u:"Unit 32", s:"Do you think this striped tie and this checked shirt ___?", ru:"сочетаться, подходить друг к другу", a:["go together"]},
+    {u:"Unit 32", s:"The docks used to be a ___ area, but now they're full of trendy lofts.", ru:"обветшалый, запущенный", a:["rundown", "run-down"]},
+    {u:"Unit 32", s:"Her extraordinary emotional depth ___ her ___ from other contemporary novelists.", ru:"выделять, делать особенным", a:["sets apart", "set apart", "sets her apart"]},
+    {u:"Unit 32", s:"With his bright orange jacket, he really ___ in the crowd.", ru:"выделяться, бросаться в глаза", a:["stood out", "stuck out", "stand out", "stick out", "stands out", "sticks out"]},
+    {u:"Unit 32", s:"The identical twins are so alike that even their teachers can't ___ them ___.", ru:"различать, отличать одно от другого", a:["tell apart", "tell them apart"]},
+
+    // UNIT 33
+    {u:"Unit 33", s:"You can't get a table at that bistro on Valentine's Day—it ___ weeks in advance.", ru:"быть полностью забронированным", a:["is booked up", "be booked up", "booked up"]},
+    {u:"Unit 33", s:"The stadium ___ for the championship final last night.", ru:"быть набитым битком", a:["was packed out", "be packed out", "packed out"]},
+    {u:"Unit 33", s:"A special charity concert ___ at the Royal Albert Hall next month.", ru:"ставиться (о спектакле), организовываться", a:["is being put on", "is put on", "be put on", "put on"]},
+    {u:"Unit 33", s:"Over three hundred fans ___ into the tiny jazz club.", ru:"набиваться, втискивать(ся)", a:["crammed in", "cram in"]},
+    {u:"Unit 33", s:"To the relief of the police, the street parade ___ peacefully.", ru:"проходить (спокойно/гладко)", a:["passed off", "pass off"]},
+    {u:"Unit 33", s:"As soon as the stadium gates opened, thousands of supporters ___.", ru:"валить валом, устремляться внутрь", a:["poured in", "pour in"]},
+    {u:"Unit 33", s:"The late-night comedy sketch mercilessly ___ pretentious action movies.", ru:"высмеивать, пародировать", a:["sent up", "sends up", "send up"]},
+    {u:"Unit 33", s:"When the lead soprano lost her voice, her understudy had to ___ for her.", ru:"подменять кого-либо", a:["stand in", "stand in for"]},
+    {u:"Unit 33", s:"He can ___ the prime minister's voice ___ so well that everyone bursts out laughing.", ru:"пародировать, передразнивать", a:["take off"]},
+    {u:"Unit 33", s:"The book launch was timed to ___ the release of the documentary.", ru:"приурочить к, сочетаться с", a:["tie in with"]},
+    {u:"Unit 33", s:"Despite the rain, there was an impressive ___ of voters at the polling station.", ru:"явка, число собравшихся", a:["turnout"]},
+    {u:"Unit 33", s:"Half the audience ___ in disgust during the offensive play.", ru:"демонстративно покинуть зал в знак протеста", a:["walked out", "walk out"]},
+
+    // UNIT 34
+    {u:"Unit 34", s:"Seeing that the customer was furious, the clerk decided to ___ and apologize.", ru:"отступить, сбавить напор", a:["back off"]},
+    {u:"Unit 34", s:"Don't ___ getting a bonus this year—company profits are down.", ru:"рассчитывать на, делать ставку на", a:["bank on"]},
+    {u:"Unit 34", s:"Innocent tourists ___ the sudden transport strike.", ru:"оказаться втянутым в", a:["were caught up in", "be caught up in", "got caught up in", "caught up in"]},
+    {u:"Unit 34", s:"Take a deep breath and ___ before you reply to that angry email.", ru:"успокоиться", a:["calm down"]},
+    {u:"Unit 34", s:"I have to stay late at the office because an urgent issue has just ___.", ru:"внезапно возникнуть, всплыть", a:["cropped up", "crop up"]},
+    {u:"Unit 34", s:"He pretended to be sick in order to ___ washing the dishes.", ru:"уклониться от, отвертеться", a:["get out of"]},
+    {u:"Unit 34", s:"The race for the presidency is really starting to ___.", ru:"накаляться, обостряться", a:["hot up"]},
+    {u:"Unit 34", s:"There was a ___ with our hotel booking, and we were given the wrong room.", ru:"неразбериха; перепутать", a:["mix-up", "mix up"]},
+    {u:"Unit 34", s:"Please don't ___ the papers on my desk; I've just sorted them.", ru:"спутать, внести путаницу", a:["muddle up"]},
+    {u:"Unit 34", s:"The entire plot of the movie ___ a stolen diamond necklace.", ru:"вращаться вокруг", a:["revolves around", "revolve around"]},
+    {u:"Unit 34", s:"True leaders ___ petty gossip and personal attacks.", ru:"быть выше чего-либо, не опускаться до", a:["rise above"]},
+    {u:"Unit 34", s:"The construction project ___ strict environmental regulations.", ru:"натолкнуться на (препятствие)", a:["ran up against", "run up against"]},
+    {u:"Unit 34", s:"Six strangers were ___ on a desert island for the reality show.", ru:"свести вместе по воле случая", a:["thrown together", "throw together"]},
+    {u:"Unit 34", s:"We worried about the weather, but the wedding ___ to be magical.", ru:"оказаться, закончиться", a:["turned out", "turn out"]},
+
+    // UNIT 35
+    {u:"Unit 35", s:"The agency always ___ the references of every job applicant.", ru:"контролировать, наводить справки", a:["checks up on", "check up on"]},
+    {u:"Unit 35", s:"In the library catalogue, biographies ___ the non-fiction section.", ru:"подпадать под рубрику/категорию", a:["come under"]},
+    {u:"Unit 35", s:"In her new novel, the writer ___ folklore from her native village.", ru:"черпать из, опираться на", a:["draws on", "draws upon", "draw on", "draw upon"]},
+    {u:"Unit 35", s:"Have you managed to ___ what time the last train leaves?", ru:"разузнать, выяснить", a:["find out"]},
+    {u:"Unit 35", s:"The suspect's alibi didn't ___ with the security camera footage.", ru:"совпадать, согласовываться", a:["match up"]},
+    {u:"Unit 35", s:"The auditor ___ several calculation errors in the annual report.", ru:"указывать, обращать внимание на", a:["pointed out", "point out"]},
+    {u:"Unit 35", s:"I didn't mean to mention the surprise party—it just ___!", ru:"случайно сорваться с языка", a:["slipped out", "slip out"]},
+    {u:"Unit 35", s:"After months of searching archives, the historian finally ___ the rare manuscript.", ru:"выследить, разыскать", a:["tracked down", "track down"]},
+    {u:"Unit 35", s:"When hiking in these woods, ___ ticks and poisonous snakes.", ru:"остерегаться, быть начеку", a:["watch out for"]},
+
+    // UNIT 36
+    {u:"Unit 36", s:"He promised to do the bungee jump, but he ___ at the last second.", ru:"струсить в последний момент", a:["bottled out", "bottle out"]},
+    {u:"Unit 36", s:"Dealing with hostage negotiations ___ immense patience and nerve.", ru:"требовать, взывать к", a:["calls for", "call for"]},
+    {u:"Unit 36", s:"The engineers ___ an ingenious way to recycle waste heat.", ru:"придумать, разработать", a:["came up with", "come up with"]},
+    {u:"Unit 36", s:"Sooner or later, he must ___ the fact that his business is failing.", ru:"смотреть правде в глаза, признать факт", a:["face up to"]},
+    {u:"Unit 36", s:"The vague wording in the contract gave the supplier an easy ___.", ru:"лазейка, способ увильнуть", a:["let-out", "let out"]},
+    {u:"Unit 36", s:"The real solution to traffic congestion ___ better public transport.", ru:"крыться в, заключаться в", a:["lies in", "lie in"]},
+    {u:"Unit 36", s:"We have ___ the shortlist of candidates from fifty to just three.", ru:"сократить (список вариантов)", a:["narrowed down", "narrow down"]},
+    {u:"Unit 36", s:"I'll ___ getting the projector fixed before the afternoon seminar.", ru:"распорядиться, позаботиться о", a:["see about"]},
+    {u:"Unit 36", s:"He took a gap year to travel and ___ his life ___.", ru:"разобраться в себе, навести порядок", a:["sort out", "sort himself out", "sort oneself out"]},
+    {u:"Unit 36", s:"If you're unhappy with the workload, ___ it ___ with your supervisor.", ru:"детально обсудить", a:["talk over", "talk it over"]},
+
+    // UNIT 37
+    {u:"Unit 37", s:"Allowing ___ rush-hour traffic, the drive to the airport takes an hour.", ru:"делать скидку на, учитывать", a:["for", "allow for"]},
+    {u:"Unit 37", s:"Renovating the old barn proved far more expensive than we had ___.", ru:"рассчитывать на, ожидать", a:["bargained for", "bargain for"]},
+    {u:"Unit 37", s:"Her parents ___ her dropping out of medical school.", ru:"быть категорически против", a:["are set against", "were set against", "be set against", "set against"]},
+    {u:"Unit 37", s:"I was going to ask the boss for a raise, but I ___ when I saw his mood.", ru:"струсить, пойти на попятный", a:["chickened out", "chicken out"]},
+    {u:"Unit 37", s:"With exams starting tomorrow, I really ___ a noisy construction site next door!", ru:"обойтись бы без, быть не в радость", a:["could do without"]},
+    {u:"Unit 37", s:"When camping in the wilderness, you learn to ___ modern luxuries.", ru:"обходиться без", a:["do without"]},
+    {u:"Unit 37", s:"Employees have the right to ___ of the company pension scheme.", ru:"отказаться от участия", a:["opt out", "opt out of"]},
+    {u:"Unit 37", s:"If you want cheap flights for Christmas, you need to ___ months in advance.", ru:"планировать наперед", a:["plan ahead"]},
+    {u:"Unit 37", s:"Before announcing the schedule change, ___ the department head.", ru:"посоветоваться с кем-то, показать идею", a:["run it by"]},
+    {u:"Unit 37", s:"Don't sign the job contract tonight—___ and decide in the morning.", ru:"отложить решение до утра", a:["sleep on it"]},
+    {u:"Unit 37", s:"Successful chess players always ___ several moves.", ru:"смотреть вперед, думать о будущем", a:["think ahead"]},
+    {u:"Unit 37", s:"He launched the startup without ___ the financial risks.", ru:"всесторонне продумать", a:["thinking through", "think through"]},
+    {u:"Unit 37", s:"Before moving abroad, we must carefully ___ all the pros and cons.", ru:"взвесить все за и против", a:["weigh up"]},
+
+    // UNIT 38
+    {u:"Unit 38", s:"Neither side was willing to ___ during the wage negotiations.", ru:"отступить, пойти на уступки в споре", a:["back down"]},
+    {u:"Unit 38", s:"It's too late to ___ of the agreement now—we've already signed!", ru:"нарушить соглашение, отказаться от сделки", a:["back out", "back out of"]},
+    {u:"Unit 38", s:"In court, you must ___ your accusations with solid evidence.", ru:"подкреплять аргументами, подтверждать", a:["back up"]},
+    {u:"Unit 38", s:"The two brothers ___ over their father's will and haven't spoken since.", ru:"разругаться, поссориться из-за", a:["fell out", "fall out"]},
+    {u:"Unit 38", s:"The constant criticism from the press really started to ___ the young coach.", ru:"задевать за живое, действовать на нервы", a:["get to"]},
+    {u:"Unit 38", s:"After hours of pestering from the kids, the exhausted mother finally ___.", ru:"сдаться, уступить", a:["gave in", "give in"]},
+    {u:"Unit 38", s:"Yes, I made a mistake three years ago, so please stop ___ it ___ me!", ru:"ставить в вину, таить обиду", a:["holding against", "hold against", "holding it against"]},
+    {u:"Unit 38", s:"An insecure boss often tries to ___ talented subordinates ___ in meetings.", ru:"унижать, принижать кого-либо", a:["put down", "put sb down"]},
+    {u:"Unit 38", s:"Several brave whistleblowers ___ against unsafe factory conditions.", ru:"открыто выступать против", a:["spoke out", "speak out"]},
+    {u:"Unit 38", s:"When my flatmates argue about rent, I prefer to ___ it.", ru:"не вмешиваться в", a:["stay out of"]},
+    {u:"Unit 38", s:"In times of crisis, our family always ___.", ru:"держаться вместе", a:["sticks together", "stick together"]},
+    {u:"Unit 38", s:"She was the only colleague brave enough to ___ the unfairly dismissed intern.", ru:"заступаться за, отстаивать", a:["stick up for"]},
+
+    // UNIT 39
+    {u:"Unit 39", s:"At first my dad opposed the trip, but we eventually ___ him ___.", ru:"переубедить, склонить на свою сторону", a:["brought round", "bring round", "brought him round"]},
+    {u:"Unit 39", s:"Stop ___ me ___! I know perfectly well that penguins can't fly.", ru:"разыгрывать, морочить голову", a:["having on", "have on", "having me on"]},
+    {u:"Unit 39", s:"Parents' associations are ___ stricter speed limits near schools.", ru:"настойчиво добиваться", a:["pressing for", "press for"]},
+    {u:"Unit 39", s:"She knows her subject well, but she struggles to ___ her ideas ___ to beginners.", ru:"доходчиво донести, убедительно изложить", a:["put across", "put over"]},
+    {u:"Unit 39", s:"The task force ___ three radical proposals to cut city emissions.", ru:"выдвигать (теорию/предложение)", a:["put forward"]},
+    {u:"Unit 39", s:"Let's ___ the proposal ___ the union members and let them vote.", ru:"изложить предложение на чей-либо суд", a:["put to"]},
+    {u:"Unit 39", s:"The organizer managed to ___ ten volunteers to help clean the beach.", ru:"завлечь, втянуть в участие", a:["rope in"]},
+    {u:"Unit 39", s:"Somehow my friends ___ me ___ signing up for a marathon!", ru:"уговорить на что-либо", a:["talked into", "talk into", "talked me into"]},
+    {u:"Unit 39", s:"Thankfully, we ___ him ___ investing his life savings in that scam.", ru:"отговорить от чего-либо", a:["talked out of", "talk out of", "talked him out of"]},
+    {u:"Unit 39", s:"She was reluctant to join the board, but the chairman ___ her ___.", ru:"переубедить долгими уговорами", a:["talked around", "talked round", "talk around", "talk round", "talked her round", "talked her around"]}
+];
+
+let pool = [...MASTER_DB];
+let currentBatch = 0; // 0: 0..99, 1: 100..199, 2: 200..264
+let currentTest = 0;  // 0..4 (20 items each)
+let userState = {};   // index in pool -> { val, status, hintLen }
+
+function shuffleArray(arr) {
+    for (let i = arr.length - 1; i > 0; i--) {
+        const j = Math.floor(Math.random() * (i + 1));
+        [arr[i], arr[j]] = [arr[j], arr[i]];
+    }
+}
+
+function init() {
+    shuffleArray(pool);
+    render();
+}
+
+function shuffleAll() {
+    shuffleArray(pool);
+    userState = {};
+    currentTest = 0;
+    render();
+}
+
+function selectBatch(b) {
+    currentBatch = b;
+    currentTest = 0;
+    render();
+}
+
+function selectTest(t) {
+    currentTest = t;
+    render();
+}
+
+function getSliceBounds() {
+    const batchStart = currentBatch * 100;
+    const start = batchStart + currentTest * 20;
+    const end = Math.min(start + 20, pool.length);
+    return { start, end, batchStart };
+}
+
+function normalize(str) {
+    return str.toLowerCase()
+              .replace(/[.,!?'"()]/g, '')
+              .replace(/\s+/g, ' ')
+              .trim();
+}
+
+function checkItem(globalIdx) {
+    const input = document.getElementById(`inp-${globalIdx}`);
+    if (!input) return;
+    const rawVal = input.value;
+    const normVal = normalize(rawVal);
+    const item = pool[globalIdx];
+
+    if (!normVal) return;
+
+    const isCorrect = item.a.some(ans => normalize(ans) === normVal);
+    userState[globalIdx] = {
+        ...(userState[globalIdx] || {}),
+        val: rawVal,
+        status: isCorrect ? 'correct' : 'incorrect'
+    };
+    renderQuestionState(globalIdx);
+    updateScore();
+}
+
+function giveHint(globalIdx) {
+    const item = pool[globalIdx];
+    const target = item.a[0];
+    const st = userState[globalIdx] || { val: '', hintLen: 0 };
+    const nextLen = Math.min((st.hintLen || 0) + 2, target.length);
+    const hintText = target.slice(0, nextLen);
+
+    userState[globalIdx] = {
+        ...st,
+        val: hintText,
+        hintLen: nextLen,
+        status: null
+    };
+    const input = document.getElementById(`inp-${globalIdx}`);
+    if (input) {
+        input.value = hintText;
+        input.focus();
+    }
+    renderQuestionState(globalIdx);
+}
+
+function renderQuestionState(globalIdx) {
+    const card = document.getElementById(`card-${globalIdx}`);
+    const fb = document.getElementById(`fb-${globalIdx}`);
+    const item = pool[globalIdx];
+    const st = userState[globalIdx];
+
+    if (!card || !fb) return;
+    card.classList.remove('correct', 'incorrect');
+    fb.className = 'feedback';
+
+    if (st && st.status === 'correct') {
+        card.classList.add('correct');
+        fb.classList.add('show', 'ok');
+        fb.innerHTML = `✅ Верно! Варианты: <strong>${item.a.join(' / ')}</strong>`;
+    } else if (st && st.status === 'incorrect') {
+        card.classList.add('incorrect');
+        fb.classList.add('show', 'err');
+        fb.innerHTML = `❌ Не совсем. Правильный ответ: <strong>${item.a[0]}</strong> (все формы: ${item.a.join(', ')})`;
+    }
+}
+
+function checkAllInTest() {
+    const { start, end } = getSliceBounds();
+    for (let i = start; i < end; i++) {
+        const input = document.getElementById(`inp-${i}`);
+        const rawVal = input ? input.value : '';
+        const normVal = normalize(rawVal);
+        const item = pool[i];
+        const isCorrect = normVal && item.a.some(ans => normalize(ans) === normVal);
+        userState[i] = {
+            ...(userState[i] || {}),
+            val: rawVal,
+            status: isCorrect ? 'correct' : 'incorrect'
+        };
+        renderQuestionState(i);
+    }
+    updateScore();
+}
+
+function showAllAnswersInTest() {
+    const { start, end } = getSliceBounds();
+    for (let i = start; i < end; i++) {
+        const item = pool[i];
+        userState[i] = {
+            val: item.a[0],
+            status: 'correct'
+        };
+        const input = document.getElementById(`inp-${i}`);
+        if (input) input.value = item.a[0];
+        renderQuestionState(i);
+    }
+    updateScore();
+}
+
+function resetCurrentTest() {
+    const { start, end } = getSliceBounds();
+    for (let i = start; i < end; i++) {
+        delete userState[i];
+    }
+    render();
+}
+
+function updateScore() {
+    const { start, end } = getSliceBounds();
+    let correctCount = 0;
+    const total = end - start;
+    for (let i = start; i < end; i++) {
+        if (userState[i] && userState[i].status === 'correct') correctCount++;
+    }
+    const batchNames = ['Сет А', 'Сет Б', 'Сет В'];
+    document.getElementById('testTitle').textContent = `${batchNames[currentBatch]} — Тест ${currentTest + 1} (вопросы ${start + 1}–${end})`;
+    document.getElementById('scoreDisplay').textContent = `Правильно: ${correctCount} / ${total}`;
+}
+
+function render() {
+    // Update batch buttons
+    const batchBtns = document.querySelectorAll('#batchSelector .btn');
+    batchBtns.forEach((b, idx) => b.classList.toggle('active', idx === currentBatch));
+
+    // Update test tabs
+    const testBtns = document.querySelectorAll('#testTabs .btn');
+    const batchStart = currentBatch * 100;
+    testBtns.forEach((b, idx) => {
+        const tStart = batchStart + idx * 20;
+        const tEnd = Math.min(tStart + 20, pool.length);
+        if (tStart >= pool.length) {
+            b.style.display = 'none';
+        } else {
+            b.style.display = 'inline-block';
+            b.textContent = `Тест ${idx + 1} (${tStart + 1}–${tEnd})`;
+            b.classList.toggle('active', idx === currentTest);
+        }
+    });
+
+    const { start, end } = getSliceBounds();
+    const container = document.getElementById('questionsContainer');
+    container.innerHTML = '';
+
+    for (let i = start; i < end; i++) {
+        const item = pool[i];
+        const st = userState[i] || {};
+        const localNum = i - start + 1;
+
+        const formattedSentence = item.s.replace(/___/g, '<strong>______</strong>');
+
+        const card = document.createElement('div');
+        card.className = 'question-card';
+        card.id = `card-${i}`;
+
+        card.innerHTML = `
+            <div class="q-header">
+                <span>Вопрос #${localNum} (общий #${i + 1})</span>
+                <span class="unit-badge">${item.u}</span>
             </div>
-            <button onclick="nextTest()" id="nextTestBtn" class="inline-flex items-center gap-2 px-4 py-2.5 rounded-xl bg-indigo-600 hover:bg-indigo-500 text-white text-sm font-semibold shadow-sm transition-all">
-                <span>Следующий тест →</span>
-            </button>
-        </div>
-    </main>
-
-    <script>
-        // =========================================================================
-        // ПОЛНАЯ БАЗА ФРАЗОВЫХ ГЛАГОЛОВ (UNITS 1-5 & 22-39 — 265 УНИКАЛЬНЫХ ЗАДАНИЙ)
-        // Формат: [Unit, Предложение с {0}, Русская подсказка, Массив допустимых ответов (первый - основной)]
-        // =========================================================================
-        const RAW_DATABASE = [
-            // --- UNIT 1 ---
-            ["Unit 1", "He finally plucked up the courage to {0} her to dinner this Friday.", "пригласить на свидание", ["ask out", "ask her out", "asked out", "asked her out"]],
-            ["Unit 1", "Our washing machine {0} yesterday, and the repairman can only come on Monday.", "сломалась", ["broke down", "break down"]],
-            ["Unit 1", "Listening to these old vinyl records always {0} fond memories of my childhood.", "воскрешает в памяти / напоминает", ["brings back", "bring back", "brought back"]],
-            ["Unit 1", "I wouldn't {0} the issue of budget cuts during the meeting if I were you.", "поднимать тему / заводить разговор", ["bring up", "brought up"]],
-            ["Unit 1", "They had to {0} the open-air football match because of the severe thunderstorm.", "отменить", ["call off", "called off"]],
-            ["Unit 1", "While cleaning the attic, I {0} my grandfather's old war diaries.", "случайно натолкнулся на", ["came across", "come across"]],
-            ["Unit 1", "The research team {0} fierce opposition when they proposed the new method.", "столкнулась с (трудностями)", ["came up against", "come up against"]],
-            ["Unit 1", "Many progressive schools have decided to {0} traditional exams.", "покончить с / избавиться от", ["do away with", "did away with", "done away with"]],
-            ["Unit 1", "Since neither of us felt like cooking tonight, we decided to {0} at an Italian restaurant.", "поесть вне дома / в ресторане", ["eat out", "ate out"]],
-            ["Unit 1", "You can't let him {0} cheating on the final test; it's unfair to everyone else!", "остаться безнаказанным / сойти с рук", ["get away with", "got away with"]],
-            ["Unit 1", "How long has Sarah been {0} Mark? They look very happy together.", "встречаться с (кем-либо)", ["going out with", "go out with", "went out with"]],
-            ["Unit 1", "Could you please {0} my indoor plants while I'm away on a business trip?", "присмотреть за / позаботиться", ["look after", "looked after"]],
-            ["Unit 1", "Snobbish people often {0} those who don't have a university degree.", "смотрят свысока на", ["look down on", "looked down on", "looks down on"]],
-            ["Unit 1", "I am really {0} meeting your family at the dinner party next week.", "жду с нетерпением", ["looking forward to", "look forward to", "looked forward to"]],
-            ["Unit 1", "Young athletes always {0} their coaches and try to imitate their work ethic.", "уважают / берут пример с", ["look up to", "looked up to", "looks up to"]],
-            ["Unit 1", "Stop {0} and help me pack these boxes before the movers arrive!", "валять дурака / бездельничать", ["messing about", "messing around", "mess about", "mess around", "mucking about", "muck about"]],
-            ["Unit 1", "My laptop has been {0} all morning; the screen keeps freezing for no reason.", "барахлить (о технике)", ["playing up", "play up", "played up"]],
-            ["Unit 1", "Never {0} until tomorrow what you can easily accomplish today.", "откладывать на потом", ["put off", "puts off"]],
-            ["Unit 1", "I honestly don't know how she {0} her boss's constant mood swings.", "мирится с / терпит", ["puts up with", "put up with"]],
-            ["Unit 1", "I'm in the middle of a conference right now; can I {0} you in twenty minutes?", "перезвонить", ["ring back", "ring you back", "call back", "call you back"]],
-            ["Unit 1", "Don't forget to {0} the application form by post before the Friday deadline.", "отослать / отправить почтой", ["send off", "sent off"]],
-            ["Unit 1", "The IT technician promised to {0} the network problem by noon.", "разобраться с / уладить", ["sort out", "sorted out"]],
-            ["Unit 1", "The police officer {0} the witness's statement in his notebook.", "записал / законспектировал", ["took down", "noted down", "take down", "note down"]],
-            ["Unit 1", "We waited for over an hour, but he never {0} at the restaurant.", "появился / пришел", ["turned up", "turn up", "turns up"]],
-
-            // --- UNIT 2 ---
-            ["Unit 2", "The manager simply {0} our safety concerns and told us to get back to work.", "отмахнулся от / проигнорировал", ["brushed aside", "brush aside"]],
-            ["Unit 2", "I'll have to {0} the suppliers again because our order is three days late.", "напомнить / подогнать", ["chase up", "chased up"]],
-            ["Unit 2", "If you don't pay your electricity bill by Friday, the company will {0} your power.", "отключить / отрезать", ["cut off", "cut you off"]],
-            ["Unit 2", "My doctor advised me to {0} refined sugar and fried foods from my diet.", "исключить / вырезать", ["cut out", "cut down on"]],
-            ["Unit 2", "All the guests {0} in 1920s outfits for the Great Gatsby theme party.", "нарядились", ["dressed up", "dress up"]],
-            ["Unit 2", "He was so gullible that he completely {0} the scammer's story about a secret inheritance.", "клюнул / повелся на уловку (или влюбился)", ["fell for", "fall for"]],
-            ["Unit 2", "Work has been so stressful lately; we really need to {0} for a few days.", "выбраться / уехать в отпуск", ["get away", "got away"]],
-            ["Unit 2", "It took my grandmother nearly a month to {0} that terrible bout of flu.", "оправиться от / пережить", ["get over", "got over"]],
-            ["Unit 2", "Accepting a bribe would {0} everything I believe in as a public servant.", "идти вразрез с / противоречить", ["go against", "goes against", "went against"]],
-            ["Unit 2", "Everyone hopes that real estate prices will finally {0} next year.", "снизятся / упадут", ["go down", "went down", "goes down"]],
-            ["Unit 2", "Let's {0} the contract carefully one more time before signing it.", "тщательно просмотреть (или пережить испытание)", ["go through", "went through"]],
-            ["Unit 2", "If you {0} interrupting the speaker, you will be asked to leave the auditorium.", "продолжишь делать что-либо", ["keep on", "kept on", "keeps on"]],
-            ["Unit 2", "You can {0} the third paragraph; it doesn't add anything important to the essay.", "пропустить / упустить", ["leave out", "left out"]],
-            ["Unit 2", "It was so foggy that the driver could barely {0} the road signs ahead.", "различить / разобрать", ["make out", "made out"]],
-            ["Unit 2", "She managed to {0} conversational Italian just by chatting with locals in Rome.", "нахвататься (знаний) / забрать", ["pick up", "picked up"]],
-            ["Unit 2", "The firefighters worked tirelessly for hours to {0} the warehouse blaze.", "потушить (огонь)", ["put out", "puts out"]],
-            ["Unit 2", "Don't worry about the catering arrangements; I will {0} everything myself.", "позаботиться о / заняться чем-то", ["see to", "saw to"]],
-            ["Unit 2", "Please {0} the television and go to bed; it's past midnight.", "выключить (прибор)", ["turn off", "turned off", "switch off"]],
-
-            // --- UNIT 3 ---
-            ["Unit 3", "Since we are new to the street, we decided to {0} our neighbors for coffee.", "пригласить к себе в гости", ["ask over", "invite over", "ask round", "invite round", "asked over", "invited over"]],
-            ["Unit 3", "I'm going to the art exhibition tonight; would you like to {0} your sister?", "пригласить пойти вместе", ["ask along", "invite along", "asked along", "invited along"]],
-            ["Unit 3", "When we reached the entrance of her building, she {0} me for a cup of tea in her flat.", "пригласила подняться к себе в квартиру", ["asked up", "invited up", "ask up", "invite up", "asked me up", "invited me up"]],
-            ["Unit 3", "The dinner party was a disaster, so I doubt they will ever {0} us again.", "пригласить снова", ["ask back", "ask us back", "asked back"]],
-            ["Unit 3", "The hijacker was finally forced to {0} his weapons to the authorities.", "передать (власть, вещи)", ["hand over", "handed over"]],
-            ["Unit 3", "You didn't really win the lottery, did you? You're just {0} me!", "разыгрываешь (кого-либо)", ["having on", "have on", "having me on", "have me on"]],
-            ["Unit 3", "Do you {0} anything this Sunday, or are you free for lunch?", "иметь запланированные дела (или носить одежду)", ["have on", "have anything on"]],
-            ["Unit 3", "Could you quickly {0} my cover letter to see if there are any typos?", "бегло просмотреть / проверить", ["look over", "looked over"]],
-            ["Unit 3", "The highway patrol officer signaled for the speeding sports car to {0}.", "съехать на обочину и остановиться", ["pull over", "pulled over"]],
-            ["Unit 3", "We saw a tiny island in the middle of the lake and decided to {0} to it.", "переплыть", ["swim over", "swam over"]],
-            ["Unit 3", "A large multinational corporation is planning to {0} our small family business.", "взять на себя управление / руководство", ["take over", "took over"]],
-            ["Unit 3", "This job offer in another city is a huge step; I need a few days to {0} it.", "обдумать / взвесить", ["think over", "think it over", "thought over"]],
-
-            // --- UNIT 4 ---
-            ["Unit 4", "Following the {0} at the jewelry store, the owners installed a high-tech alarm system.", "незаконное проникновение / взлом (сущ.)", ["break-in", "break in"]],
-            ["Unit 4", "Fortunately, no innocent {0} were injured during the police chase.", "очевидцы / свидетели (сущ.)", ["bystanders", "bystander"]],
-            ["Unit 4", "Due to severe budget {0} in healthcare, the local clinic had to close two wards.", "сокращения (расходов/штата)", ["cutbacks", "cutback"]],
-            ["Unit 4", "Despite being a college {0}, he founded one of the most successful tech startups.", "бросивший учебу / недоучка", ["dropout", "drop-out"]],
-            ["Unit 4", "The detectives finally discovered the bank robbers' secret {0} in the woods.", "укрытие / убежище", ["hideout", "hide-out"]],
-            ["Unit 4", "I love Sundays because I don't have to set an alarm and can enjoy a long {0}.", "долгое валяние в постели по утрам", ["lie-in", "lie in"]],
-            ["Unit 4", "Fifteen dollars for a small cup of plain coffee is an absolute {0}!", "грабёж / обдираловка", ["rip-off", "rip off"]],
-            ["Unit 4", "Nobody likes playing tennis with him because he is such a {0} whenever he wins.", "хвастун / позёр", ["show-off", "show off"]],
-            ["Unit 4", "You should always do a ten-minute {0} before lifting heavy weights.", "разминка", ["warm-up", "warm up"]],
-            ["Unit 4", "The kitchen sink is completely {0}, so I had to call a plumber.", "засорённый / заложенный (прил.)", ["blocked-up", "blocked up"]],
-            ["Unit 4", "We passed a {0} bus sitting on the side of the motorway.", "сломанный / вышедший из строя (прил.)", ["broken-down", "broken down"]],
-            ["Unit 4", "When our engine died on the highway, we waited two hours for a {0} truck.", "аварийный (грузовик) / поломка", ["breakdown", "break-down"]],
-            ["Unit 4", "The journalist exposed a massive government {0} involving toxic waste.", "укрывательство / сокрытие правды", ["cover-up", "cover up"]],
-            ["Unit 4", "The neighbors reported some strange {0} at the empty house across the street at night.", "странные дела / проделки", ["goings-on", "goings on"]],
-            ["Unit 4", "Don't throw away the roast chicken; we can use the {0} to make sandwiches tomorrow.", "остатки еды", ["leftovers", "leftover"]],
-            ["Unit 4", "While the gang broke into the vault, one accomplice stayed outside as a {0}.", "наблюдатель / дозорный", ["lookout", "look-out"]],
-            ["Unit 4", "A crowd of curious {0} gathered around the film set to watch the actors.", "зрители / зеваки", ["onlookers", "onlooker"]],
-            ["Unit 4", "The proposal to build a highway through the park caused a massive public {0}.", "общественный протест / буря возмущения", ["outcry"]],
-            ["Unit 4", "Her constant sarcastic {0} during team meetings made her colleagues feel insecure.", "унизительные замечания / колкости", ["put-downs", "put-down", "put downs", "put down"]],
-            ["Unit 4", "Let's do one final {0} of the presentation before the clients arrive at ten.", "прогон / репетиция (сущ.)", ["run-through", "run through"]],
-
-            // --- UNIT 5 ---
-            ["Unit 5", "The lecture was so dense that I couldn't {0} all the details at once.", "усвоить / воспринять (или обмануть / приютить)", ["take in", "took in"]],
-            ["Unit 5", "When the negotiations reached a deadlock, a government mediator had to {0}.", "вмешаться / прийти на помощь", ["step in", "stepped in"]],
-            ["Unit 5", "After working twelve hours straight, my brain just {0} and I couldn't focus.", "отключился (мыслями) / выключить", ["switched off", "switch off"]],
-            ["Unit 5", "He enjoys freelance work because he doesn't want a regular office job to {0} him.", "связывать обязательствами / привязать", ["tie down", "tie him down", "tied down"]],
-            ["Unit 5", "Elite private universities often {0} the brightest students from public high schools.", "снимать сливки / отбирать лучшее", ["cream off", "creamed off"]],
-            ["Unit 5", "From a very young age, road safety rules were {0} the children by their parents.", "вдалбливать / внушать", ["drummed into", "drum into"]],
-            ["Unit 5", "I'm not quite sure what you are {0} with these strange questions; please be direct.", "клонить к чему-либо / намекать", ["driving at", "drive at", "drove at"]],
-            ["Unit 5", "The roar of the passing freight train completely {0} our conversation on the platform.", "заглушить (звук)", ["drowned out", "drown out"]],
-            ["Unit 5", "The holidays are officially over, so it's time to {0} revising for the final exams.", "всерьез приняться за дело", ["get down to", "got down to"]],
-
-            // --- UNIT 22 ---
-            ["Unit 22", "I'd love to chat, but I am really {0} right now because my train leaves in ten minutes.", "быть в цейтноте / не иметь времени", ["pressed for time", "pushed for time", "be pressed for time", "be pushed for time"]],
-            ["Unit 22", "They decided to {0} the meeting from Friday to Wednesday because the director is leaving.", "перенести на более ранний срок", ["bring forward", "brought forward"]],
-            ["Unit 22", "Factory workers are required to {0} at 8:00 AM sharp using their electronic badges.", "отмечать время прихода на работу", ["clock in", "clock on", "clocked in", "clocked on"]],
-            ["Unit 22", "What time do you usually {0} from work on Friday afternoons?", "отмечать время ухода с работы", ["clock off", "clock out", "clocked off", "clocked out"]],
-            ["Unit 22", "My schedule is packed today, but I can {0} you for fifteen minutes after lunch.", "выкроить время", ["fit in", "fit you in"]],
-            ["Unit 22", "{0} a second! I think you dropped your car keys by the elevator.", "подождать немного", ["hang on", "hung on"]],
-            ["Unit 22", "During the summer holidays, local teenagers usually {0} at the skate park.", "тусоваться / проводить время", ["hang out", "hung out"]],
-            ["Unit 22", "At the party, a rather boring acquaintance {0} me and wouldn't leave me alone.", "увязаться за кем-то / ухватиться за идею", ["latched on to", "latch on to", "latched onto", "latch onto"]],
-            ["Unit 22", "If you spend the whole afternoon {0}, you'll never finish your history project.", "бездельничать / валять дурака (m...)", ["mucking about", "muck about", "mucking around", "muck around", "messing about", "mess about"]],
-            ["Unit 22", "Despite the heavy rain and strong winds, the hikers decided to {0} toward the camp.", "упорно продолжать / двигаться вперед", ["press on", "pressed on"]],
-            ["Unit 22", "We need to renew our passports soon because they are about to {0}.", "иссякать / заканчиваться / истекать", ["run out", "ran out", "running out"]],
-            ["Unit 22", "Following the exhausting project, the manager advised her team to {0}.", "взять отгул / отпуск", ["take time off", "take some time off", "took time off"]],
-            ["Unit 22", "On rainy Sunday afternoons, we love to {0} the hours by playing board games.", "коротать время", ["while away", "whiled away"]],
-
-            // --- UNIT 23 ---
-            ["Unit 23", "The museum exhibition features vintage photographs from a {0} era.", "прошлый / минувший (прил.)", ["bygone"]],
-            ["Unit 23", "The stone foundation of this medieval fortress {0} the twelfth century.", "датироваться / восходить к", ["dates back to", "date back to", "dates back", "date back", "dated back to"]],
-            ["Unit 23", "The committee meeting {0} for nearly four hours without reaching any conclusion.", "затягиваться / тянуться бесконечно", ["dragged on", "drag on", "drags on"]],
-            ["Unit 23", "Sorry I'm late; my flight was {0} by dense fog at the airport.", "задерживать", ["held up", "hold up"]],
-            ["Unit 23", "{0}, or we are going to miss the opening trailers at the cinema!", "торопить(ся)", ["hurry up", "hurried up"]],
-            ["Unit 23", "As the years {0}, people realize that health is far more important than wealth.", "идти / проходить (о времени)", ["go by", "went by", "goes by", "pass by"]],
-            ["Unit 23", "In the software industry, programmers must study constantly to {0} the latest trends.", "идти в ногу со временем / не отставать", ["keep up with", "kept up with"]],
-            ["Unit 23", "Graduating is exciting, even though many tough challenges {0} for young professionals.", "предстоять в будущем", ["lie ahead", "lay ahead", "lies ahead"]],
-            ["Unit 23", "He deeply regretted letting so many golden career opportunities {0} him.", "проходить мимо", ["pass by", "passed by", "pass him by"]],
-            ["Unit 23", "If the keynote speaker's presentation {0}, we will have to shorten the Q&A session.", "затянуться сверх нормы", ["runs on", "run on", "ran on"]],
-            ["Unit 23", "The smell of freshly baked cinnamon rolls always {0} me to my grandmother's kitchen.", "мысленно возвращать в прошлое", ["takes back", "take back", "takes me back", "took me back"]],
-            ["Unit 23", "Whenever I {0} my freshman year at college, I smile at how naive I was.", "вспоминать / оглядываться назад", ["think back to", "thought back to"]],
-
-            // --- UNIT 24 ---
-            ["Unit 24", "During winter blizzards, this remote mountain village is often {0} the outside world.", "быть отрезанным от", ["cut off from", "be cut off from"]],
-            ["Unit 24", "Picturesque ancient chapels and windmills are {0} the entire Greek island.", "быть разбросанным по округе", ["dotted around", "be dotted around"]],
-            ["Unit 24", "The charming little bookshop is {0} in a quiet cobblestone alley behind the cathedral.", "быть спрятанным в укромном месте", ["tucked away", "be tucked away"]],
-            ["Unit 24", "A fresh coat of yellow paint and colorful cushions will really {0} this gloomy room.", "оживлять / преображать", ["brighten up", "brightened up"]],
-            ["Unit 24", "The shopkeeper is out for lunch right now, so we'll have to {0} later this afternoon.", "зайти снова / навестить повторно", ["call back", "called back"]],
-            ["Unit 24", "When leaving the train, check your seats to make sure nothing is {0}.", "оставить позади / забыть", ["left behind", "leave behind"]],
-            ["Unit 24", "The master bedroom has large French doors that {0} a sunlit private garden.", "выходить в / открываться в", ["open into", "opens into", "opened into"]],
-            ["Unit 24", "After the lecture ended, a few students {0} to ask the professor some questions.", "остаться / задержаться (после ухода других)", ["stayed behind", "stay behind"]],
-            ["Unit 24", "Since it's pouring with rain outside, I'd much rather {0} tonight and watch a movie.", "оставаться дома", ["stay in", "stayed in"]],
-            ["Unit 24", "She went to Paris for a one-year course, but loved it so much that she {0} for five years.", "задерживаться дольше положенного", ["stayed on", "stay on"]],
-            ["Unit 24", "Her parents are very strict and never allow her to {0} past 10 PM on school nights.", "гулять допоздна / не возвращаться домой", ["stay out", "stayed out"]],
-            ["Unit 24", "From the top of the cliff, golden wheat fields {0} as far as the eye could see.", "простираться вдаль", ["stretched away", "stretch away"]],
-
-            // --- UNIT 25 ---
-            ["Unit 25", "The invention of the steam engine {0} profound social and economic changes.", "приводить к / вызывать", ["brought about", "bring about", "brings about"]],
-            ["Unit 25", "Nobody truly understands what personal motives {0} his sudden resignation.", "лежать в основе / быть истинной причиной", ["lie behind", "lay behind", "lies behind"]],
-            ["Unit 25", "After losing the match, the team vowed to {0} their rivals next season.", "отомстить / отплатить той же монетой", ["pay back", "pay them back", "paid back"]],
-            ["Unit 25", "Investigators are still examining the scene and have not yet {0} the possibility of arson.", "исключать (возможность)", ["ruled out", "rule out"]],
-            ["Unit 25", "Somebody accidentally {0} the smoke alarm in the hotel corridor.", "привести в действие / запустить", ["set off", "sets off", "triggered off"]],
-            ["Unit 25", "Please don't mention her ex-boyfriend's wedding, or you will {0} her crying again!", "заставить плакать или смеяться / вывести из себя", ["set off", "set her off"]],
-            ["Unit 25", "The referee's controversial penalty decision {0} a heated argument between the coaches.", "спровоцировать / разжечь", ["sparked off", "spark off", "triggered off", "set off"]],
-            ["Unit 25", "His deep distrust of banks {0} losing his savings during the financial crisis.", "проистекать из / брать начало", ["springs from", "spring from", "sprang from"]],
-            ["Unit 25", "He was accused of trying to {0} trouble among the staff by spreading false rumors.", "разжигать вражду / сеять смуту", ["stir up", "stirred up"]],
-            ["Unit 25", "Eating peanuts can {0} a severe allergic reaction in some people.", "вызывать цепную реакцию / запускать", ["trigger off", "triggered off", "set off"]],
-
-            // --- UNIT 26 ---
-            ["Unit 26", "Their argument over the budget was intense, but hopefully it will {0} by Monday.", "улечься / пройти (о кризисе, ссоре)", ["blow over", "blew over"]],
-            ["Unit 26", "Next month, our accounting department is going to {0} to a cloud-based system.", "переходить на другую систему", ["change over", "changed over"]],
-            ["Unit 26", "You should arrive at the stadium early because the best sections {0} very quickly.", "заполняться до краев", ["fill up", "filled up", "fills up"]],
-            ["Unit 26", "As the election date approaches, the debates between the candidates are beginning to {0}.", "накаляться (о споре, страстях)", ["heat up", "heated up", "hot up"]],
-            ["Unit 26", "After two years of economic recession, things are finally starting to {0} for small businesses.", "улучшаться (о делах)", ["look up", "looked up", "looking up"]],
-            ["Unit 26", "We are launching a pilot version next week to see how our marketing strategy {0}.", "складываться / удаваться", ["pans out", "pan out", "panned out"]],
-            ["Unit 26", "The ministry plans to {0} the new digital curriculum gradually over three years.", "внедрять поэтапно", ["phase in", "phased in"]],
-            ["Unit 26", "Many European countries are working to {0} coal-fired power plants gradually.", "постепенно выводить из употребления", ["phase out", "phased out"]],
-            ["Unit 26", "Sales are usually slow in January, but retail trade tends to {0} again in the spring.", "оживляться / набирать обороты", ["pick up", "picked up", "picks up"]],
-            ["Unit 26", "Even though the new training plan is tough, I'm going to {0} it until the marathon.", "придерживаться прежнего плана", ["stick with", "stuck with"]],
-            ["Unit 26", "Corporations must {0} the fact that consumers now demand eco-friendly packaging.", "осознать реальное положение дел", ["wake up to", "woke up to"]],
-            ["Unit 26", "The dentist warned me that my jaw would start aching once the anesthetic {0}.", "проходить / ослабевать (о лекарстве, эффекте)", ["wears off", "wear off", "wore off"]],
-
-            // --- UNIT 27 ---
-            ["Unit 27", "Our charity had a great year, and we hope to {0} this success in our next campaign.", "опираться на достигнутое", ["build on", "built on"]],
-            ["Unit 27", "Nobody thought she could negotiate the deal, but she managed to {0} it.", "успешно справиться с трудным делом (b...)", ["bring off", "bring it off", "brought off", "brought it off", "pull off"]],
-            ["Unit 27", "When smartphones first appeared, skeptics doubted whether touchscreens would ever {0}.", "войти в моду / прижиться", ["catch on", "caught on"]],
-            ["Unit 27", "After missing three weeks of school, Tim had to study hard to {0} with his classmates.", "наверстать / догнать", ["catch up", "caught up"]],
-            ["Unit 27", "It was a risky tactical plan, so we were relieved when the gamble finally {0}.", "увенчаться успехом / удаться", ["came off", "come off"]],
-            ["Unit 27", "Greed, arrogance, and poor management ultimately led to the {0} of the empire.", "крах / гибель / падение (сущ.)", ["downfall"]],
-            ["Unit 27", "His essay is well-written; where his argument really {0} is in the lack of statistics.", "оказаться уязвимым / провалиться", ["falls down", "fall down", "fell down"]],
-            ["Unit 27", "We were about to buy the house, but the deal {0} at the last minute.", "сорваться / не состояться (о планах, сделке)", ["fell through", "fall through"]],
-            ["Unit 27", "Even though we hadn't rehearsed properly, we somehow managed to {0} the presentation.", "кое-как справиться", ["muddle through", "muddled through"]],
-            ["Unit 27", "All those months of waking up at 5 AM to train finally {0} when she won the gold medal.", "окупиться / принести плоды", ["paid off", "pay off"]],
-            ["Unit 27", "The illusionist managed to {0} the most dangerous escape trick of his career.", "провернуть / блестяще выполнить (p...)", ["pull off", "pulled off", "bring off"]],
-            ["Unit 27", "To {0} of its competitors, the company invests billions in battery research.", "удерживать лидерство", ["stay ahead", "stayed ahead"]],
-            ["Unit 27", "Thanks to his father's connections, he effortlessly {0} a high-paying job after graduation.", "легко заполучить (работу, место)", ["walked into", "walk into"]],
-
-            // --- UNIT 28 ---
-            ["Unit 28", "To save money for our summer trip, we've decided to {0} on ordering takeaway food.", "сократить (расход, объём)", ["cut down", "cuts down"]],
-            ["Unit 28", "During the middle of the interview, my mind went blank and my flow of ideas completely {0}.", "иссякнуть (об идеях, словах)", ["dried up", "dry up"]],
-            ["Unit 28", "We have two slices of cake left in the fridge; would you like to {0} them?", "доделать / доесть до конца", ["finish off", "finish them off", "finished off", "polish off"]],
-            ["Unit 28", "Their initial enthusiasm for learning Japanese every evening gradually {0} after a month.", "сойти на нет / выдохнуться", ["fizzled out", "fizzle out"]],
-            ["Unit 28", "From the very {0} of the expedition, the explorers knew they would face extreme cold.", "начало / отправная точка (сущ.)", ["outset"]],
-            ["Unit 28", "It's almost 6 PM, so let's {0} our tools and head home for the day.", "собрать вещи (после работы)", ["pack up", "packed up"]],
-            ["Unit 28", "The starving teenagers {0} two large pizzas in less than ten minutes.", "быстро расправиться с (едой, работой)", ["polished off", "polish off", "finished off"]],
-            ["Unit 28", "Immediately after winning the election, the new mayor {0} reforming public transport.", "приняться за / приступить к", ["set about", "sets about"]],
-            ["Unit 28", "The explorers {0} at dawn to cross the desert before the midday heat.", "отправиться в путь (или изложить идеи)", ["set out", "set off"]],
-            ["Unit 28", "The famous billionaire {0} his career by selling handmade electronics from a garage.", "начинать(ся) определенным образом", ["started off", "started out", "start off", "start out"]],
-            ["Unit 28", "After a stressful day at work, I listen to classical music to help me {0} before sleep.", "расслабляться / сбавлять обороты", ["wind down", "wound down"]],
-
-            // --- UNIT 29 ---
-            ["Unit 29", "Could you help me {0} these colorful balloons before the birthday guests arrive?", "надувать (или взрывать)", ["blow up", "blew up"]],
-            ["Unit 29", "The polite butler stepped forward to {0} the elderly gentleman his heavy overcoat.", "помочь надеть или снять (пальто)", ["help off with", "help on with", "help him off with", "helped off with"]],
-            ["Unit 29", "The park bench was narrow, so she asked the stranger to {0} a bit so she could sit.", "подвинуться (в сторону)", ["move over", "moved over"]],
-            ["Unit 29", "Could everyone in the row please {0} one seat so this couple can sit together?", "подвинуться вперед / ближе", ["move up", "moved up"]],
-            ["Unit 29", "I'm just going to {0} to the corner shop for some milk; I'll be back in five minutes.", "отлучиться ненадолго / выскочить", ["pop out", "popped out"]],
-            ["Unit 29", "She {0} her hand to catch the falling glass before it hit the floor.", "протянуть руку (или обратиться за поддержкой)", ["reached out", "reach out"]],
-            ["Unit 29", "You are driving way too fast on this icy road; please {0} before we skid!", "замедлить(ся) / сбавить ход", ["slow down", "slow up", "slowed down"]],
-            ["Unit 29", "Furious at the unfair accusations, she {0} the letter and threw the pieces into the bin.", "порвать в клочья", ["tore up", "tear up"]],
-            ["Unit 29", "The lawyers met this morning to {0} the remaining loose ends of the merger agreement.", "связать / уладить последние формальности", ["tie up", "tied up"]],
-            ["Unit 29", "It's freezing outside today, so make sure you {0} warm in a scarf and winter coat!", "укутаться / упаковать / закругляться", ["wrap up", "wrapped up"]],
-
-            // --- UNIT 30 ---
-            ["Unit 30", "We {0} to make our visiting relatives feel welcome, yet they still complained.", "лезть из кожи вон, чтобы помочь", ["bent over backwards", "bend over backwards"]],
-            ["Unit 30", "My cheap leather boots started {0} after just one winter of heavy rain.", "разваливаться на куски / расклеиться", ["falling apart", "fall apart", "fell apart"]],
-            ["Unit 30", "When the bully tried to steal his lunch money, the boy finally decided to {0}.", "давать отпор / сопротивляться", ["fight back", "fought back"]],
-            ["Unit 30", "The clumsy dog wagged its tail excitedly and accidentally {0} a priceless antique vase.", "опрокинуть / сбить с ног", ["knocked over", "knock over"]],
-            ["Unit 30", "The city council voted to {0} the abandoned textile factory and build a park.", "снести (здание)", ["pull down", "tear down", "pulled down", "tore down"]],
-            ["Unit 30", "The new police commissioner vowed to {0} corruption within the department.", "искоренить / уничтожить под корень", ["root out", "stamp out", "rooted out", "stamped out"]],
-            ["Unit 30", "I was so nervous during my driving test that I completely {0} the parallel parking.", "запороть / напортачить / скомкать", ["screwed up", "screw up"]],
-            ["Unit 30", "Her loyal friends promised to {0} her the difficult months of medical treatment.", "поддержать кого-либо в беде", ["see through", "see her through", "saw through"]],
-            ["Unit 30", "Despite suffering a major financial {0} last quarter, the startup launched on time.", "задержка / неудача / регресс (сущ.)", ["setback", "set-back"]],
-            ["Unit 30", "Watching the two brothers fight over their inheritance is {0} the whole family.", "терзать душу / разорвать на части", ["tearing apart", "tear apart", "tearing the whole family apart"]],
-            ["Unit 30", "The guard dog had always been gentle, so everyone was shocked when it suddenly {0} its trainer.", "внезапно наброситься на", ["turned on", "turn on"]],
-
-            // --- UNIT 31 ---
-            ["Unit 31", "When she heard she had won the scholarship, she was {0} with excitement and joy.", "кипеть / переливаться через край (об эмоциях)", ["bubbling over", "bubble over", "bubbled over"]],
-            ["Unit 31", "It is extremely rude to {0} while two people are having a private conversation.", "бесцеремонно встревать в разговор", ["butt in", "butted in"]],
-            ["Unit 31", "Let's leave the question of marketing expenses for now; we will {0} it later.", "вернуться к (теме)", ["come back to", "came back to"]],
-            ["Unit 31", "Using simple diagrams helped the professor {0} his complex theory to the students.", "донести смысл / четко объяснить", ["get across", "get his complex theory across", "got across", "put across"]],
-            ["Unit 31", "Now that we have approved last month's minutes, let's {0} the main item on the agenda.", "перейти к следующему вопросу", ["get on to", "get onto", "got on to"]],
-            ["Unit 31", "I've warned my son about reckless driving a hundred times, but I can't seem to {0} him.", "достучаться до кого-то", ["get through to", "got through to"]],
-            ["Unit 31", "Since we only have twenty minutes for this discussion, please {0} the main topic.", "придерживаться (плана, темы)", ["keep to", "kept to"]],
-            ["Unit 31", "{0} the issue of cost for a moment, do you think the architectural design is practical?", "отложить в сторону / не касаться пока", ["leaving aside", "leave aside", "left aside"]],
-            ["Unit 31", "Just because you were promoted to supervisor doesn't give you the right to {0} everyone!", "помыкать / командовать", ["order about", "order around", "order everyone about", "order everyone around"]],
-            ["Unit 31", "When you see Elena at the gym tonight, could you please {0} the message that class is canceled?", "передать (информацию)", ["pass on", "passed on"]],
-            ["Unit 31", "Before stepping onto the stage, the director asked the cast to {0} Act Two one more time.", "бегло повторить / отрепетировать (гл.)", ["run through", "ran through"]],
-            ["Unit 31", "Could you please {0} so the people in the back row can hear you clearly?", "говорить громче / высказываться открыто", ["speak up", "spoke up"]],
-            ["Unit 31", "He still doesn't understand the protocol; do I have to {0} everything word by word?", "разжевать / разъяснить по полочкам", ["spell out", "spell everything out", "spelled out", "spelt out"]],
-            ["Unit 31", "Although the salary was generous, she decided to {0} the job offer.", "отклонить / отказать", ["turn down", "turned down"]],
-            ["Unit 31", "Whenever I face a tough moral dilemma, I always {0} my older brother for guidance.", "обратиться к кому-то за советом / помощью", ["turn to", "turned to", "turns to"]],
-
-            // --- UNIT 32 ---
-            ["Unit 32", "After the music festival ended, the entire park was {0} plastic cups and wrappers.", "быть заваленным / усеянным мусором", ["littered with", "be littered with"]],
-            ["Unit 32", "When traveling abroad, I try to dress like the locals so that I can {0}.", "сливаться / гармонировать с окружением", ["blend in", "blended in"]],
-            ["Unit 32", "They bought a centuries-old country cottage and plan to {0} it this summer.", "отремонтировать / привести в порядок (или застегнуть)", ["do up", "do it up", "did up"]],
-            ["Unit 32", "After the twelve-hour flight, the first thing I wanted to do was take a shower and {0}.", "освежиться / привести себя в порядок", ["freshen up", "freshened up"]],
-            ["Unit 32", "In my opinion, that striped tie and your checkered shirt don't really {0} at all.", "сочетаться / подходить друг к другу", ["go together", "went together"]],
-            ["Unit 32", "The old industrial district on the outskirts of town looks quite {0} and needs investment.", "обветшалый / запущенный (прил.)", ["rundown", "run-down", "run down"]],
-            ["Unit 32", "What really {0} her novels from other crime thrillers is her deep psychological insight.", "выделять / делать особенным", ["sets apart", "set apart", "sets her novels apart"]],
-            ["Unit 32", "With his bright orange jacket and two-meter height, he certainly {0} in any crowd.", "выделяться / бросаться в глаза", ["stands out", "sticks out", "stand out", "stick out", "stood out"]],
-            ["Unit 32", "The twin sisters look so remarkably alike that even their teachers can barely {0} them.", "различать / отличать одно от другого", ["tell apart", "tell them apart", "told apart"]],
-
-            // --- UNIT 33 ---
-            ["Unit 33", "If you want to dine there on Valentine's Day, forget it—they are completely {0}.", "быть полностью забронированным", ["booked up", "be booked up"]],
-            ["Unit 33", "The stadium was {0} for the championship final, with not a single empty seat.", "быть набитым битком", ["packed out", "be packed out"]],
-            ["Unit 33", "Every Christmas, a spectacular charity pantomime is {0} by the local dramatic society.", "ставиться (о спектакле) / организовываться", ["put on", "be put on"]],
-            ["Unit 33", "The small jazz club only had fifty chairs, yet nearly a hundred fans managed to {0}.", "набиваться / втискивать(ся)", ["cram in", "crammed in"]],
-            ["Unit 33", "Despite fears of clashes between protesters, the political rally {0} peacefully.", "проходить (спокойно, гладко — о мероприятии)", ["passed off", "pass off"]],
-            ["Unit 33", "As soon as the stadium gates opened at noon, thousands of excited fans began to {0}.", "валить валом / устремляться внутрь", ["pour in", "poured in"]],
-            ["Unit 33", "The new late-night comedy show brilliantly {0} pompous politicians and celebrities.", "высмеивать / пародировать (сатирически)", ["sends up", "send up", "sent up"]],
-            ["Unit 33", "Because the lead soprano lost her voice this morning, her understudy will have to {0} her.", "подменять кого-либо", ["stand in for", "stand in", "stood in for"]],
-            ["Unit 33", "Mark is hilarious at office parties; he can {0} the company director so accurately!", "пародировать / передразнивать (манеру)", ["take off", "take the company director off", "took off"]],
-            ["Unit 33", "The release of the documentary was scheduled to {0} the centenary of the peace treaty.", "приурочить к / сочетаться с", ["tie in with", "tied in with"]],
-            ["Unit 33", "Thanks to the sunny weather, there was a record-breaking {0} at this year's village fair.", "явка / число собравшихся (сущ.)", ["turnout", "turn-out"]],
-            ["Unit 33", "Halfway through the controversial play, dozens of offended audience members stood up and {0}.", "демонстративно покинуть зал в знак протеста", ["walked out", "walk out"]],
-
-            // --- UNIT 34 ---
-            ["Unit 34", "When the angry customer saw the security guard approaching, he immediately {0}.", "отступить / сбавить напор", ["backed off", "back off"]],
-            ["Unit 34", "Don't {0} having our barbecue outdoors tomorrow; the forecast predicts heavy rain.", "рассчитывать на / делать ставку на", ["bank on", "banked on"]],
-            ["Unit 34", "As an innocent tourist, he accidentally got {0} a street demonstration near parliament.", "оказаться втянутым в", ["caught up in", "be caught up in"]],
-            ["Unit 34", "Take a deep breath and {0}; panicking won't help us find your lost passport!", "успокоиться", ["calm down", "calmed down"]],
-            ["Unit 34", "I have to cancel our tennis match tonight because an urgent family matter has just {0}.", "внезапно возникнуть / всплыть", ["cropped up", "crop up"]],
-            ["Unit 34", "My brother always pretends to have a headache whenever he wants to {0} washing the dishes.", "уклониться от / отвертеться", ["get out of", "got out of"]],
-            ["Unit 34", "With only two weeks left before the final, the rivalry between the runners is really {0}.", "накаляться / обостряться (о соперничестве)", ["hotting up", "hot up", "heating up", "heat up"]],
-            ["Unit 34", "There was an administrative {0} at the hotel reception with our room reservations.", "неразбериха / путаница (или перепутать)", ["mix-up", "mix up", "muddle-up"]],
-            ["Unit 34", "Please don't touch the papers on my desk, or you will {0} the chronological order.", "спутать / внести путаницу", ["muddle up", "muddled up", "mix up"]],
-            ["Unit 34", "Since the birth of their first child, their entire social life seems to {0} the baby's schedule.", "вращаться вокруг", ["revolve around", "revolved around", "revolves around"]],
-            ["Unit 34", "Instead of responding to petty insults online, the actress chose to {0} the negativity.", "быть выше чего-либо / не опускаться до", ["rise above", "rose above"]],
-            ["Unit 34", "While trying to patent their invention, the engineers {0} strict bureaucratic rules.", "натолкнуться на (препятствие)", ["ran up against", "run up against", "came up against"]],
-            ["Unit 34", "During the survival camp, six complete strangers were {0} and forced to work as a team.", "свести вместе по воле случая", ["thrown together", "throw together"]],
-            ["Unit 34", "Everyone worried that the outdoor wedding would be ruined by rain, but it {0} splendidly.", "оказаться / закончиться (определенным образом)", ["turned out", "turn out"]],
-
-            // --- UNIT 35 ---
-            ["Unit 35", "My elderly neighbor asked me to {0} her house every couple of days while she is away.", "контролировать / проверять / наводить справки", ["check up on", "checked up on"]],
-            ["Unit 35", "In the university library catalog, books on cognitive psychology {0} 'Social Sciences'.", "подпадать под рубрику / категорию", ["come under", "came under", "comes under"]],
-            ["Unit 35", "When writing her historical novel, the author {0} her own family's wartime archives.", "черпать из / опираться на (опыт, знания)", ["drew on", "drew upon", "draw on", "draw upon"]],
-            ["Unit 35", "Have you managed to {0} what time the last ferry leaves from the mainland?", "разузнать / выяснить", ["find out", "found out"]],
-            ["Unit 35", "The detective grew suspicious because the suspect's alibi did not {0} with the video footage.", "совпадать / согласовываться", ["match up", "matched up"]],
-            ["Unit 35", "Before we sign the lease, I feel I should {0} that the rent does not include heating bills.", "указывать / обращать внимание на", ["point out", "pointed out"]],
-            ["Unit 35", "I didn't mean to ruin the surprise party; the secret just {0} while we were chatting!", "случайно сорваться с языка", ["slipped out", "slip out"]],
-            ["Unit 35", "After searching antique markets across Europe for years, the collector managed to {0} the painting.", "выследить / разыскать", ["track down", "tracked down"]],
-            ["Unit 35", "When hiking through these dense woods in spring, you must always {0} venomous snakes.", "остерегаться / быть начеку", ["watch out for", "watched out for"]],
-
-            // --- UNIT 36 ---
-            ["Unit 36", "He boasted for weeks that he would do a bungee jump, but when he looked down, he {0}.", "струсить в последний момент (b...)", ["bottled out", "bottle out", "chickened out"]],
-            ["Unit 36", "Resolving a diplomatic crisis of this magnitude {0} extraordinary patience and tact.", "требовать / взывать к", ["calls for", "call for", "called for"]],
-            ["Unit 36", "The engineering team locked themselves in the room until they {0} a brilliant solution.", "придумать / разработать (решение)", ["came up with", "come up with"]],
-            ["Unit 36", "Instead of ignoring your mounting debts, you need to {0} your financial reality.", "смотреть правде в глаза / признать факт", ["face up to", "faced up to"]],
-            ["Unit 36", "The contractor included a clever clause to give himself an easy {0} if costs rose too high.", "лазейка / способ увильнуть (сущ.)", ["let-out", "let out"]],
-            ["Unit 36", "The real root of our communication problem {0} the fact that our departments never share data.", "крыться в / заключаться в", ["lies in", "lie in", "lay in"]],
-            ["Unit 36", "Out of two hundred job applicants, the HR committee has {0} the list to five finalists.", "сократить (список вариантов)", ["narrowed down", "narrow down"]],
-            ["Unit 36", "The printer in the main office is jammed again; I'll ask the receptionist to {0} getting it fixed.", "распорядиться / позаботиться о", ["see about", "saw about"]],
-            ["Unit 36", "After going through a tough breakup, he took a sabbatical to travel and {0}.", "разобраться в себе / навести порядок в жизни", ["sort himself out", "sort oneself out", "sort out"]],
-            ["Unit 36", "Before making a final decision on moving abroad, you should {0} the matter with your family.", "детально обсудить", ["talk over", "talk the matter over", "talked over"]],
-
-            // --- UNIT 37 ---
-            ["Unit 37", "When estimating the cost of the home renovation, you should {0} unexpected delays.", "делать скидку на / учитывать", ["allow for", "allowed for"]],
-            ["Unit 37", "Adopting an energetic husky puppy proved to be far more work than the couple had {0}.", "рассчитывать на / ожидать (заранее)", ["bargained for", "bargain for"]],
-            ["Unit 37", "Her conservative parents are strongly {0} her taking a gap year to travel alone.", "быть категорически против", ["set against", "be set against"]],
-            ["Unit 37", "We were both supposed to audition for the show, but my friend {0} right before his turn.", "струсить / пойти на попятный (c...)", ["chickened out", "chicken out", "bottled out"]],
-            ["Unit 37", "With three exams scheduled for tomorrow morning, I really {0} this terrible migraine!", "обойтись бы без / быть не в радость", ["could do without", "can do without"]],
-            ["Unit 37", "Since the coffee machine is broken, we will just have to {0} our morning espresso today.", "обходиться без", ["do without", "did without"]],
-            ["Unit 37", "Employees are automatically enrolled in the pension scheme, though they can {0} it anytime.", "отказаться от участия", ["opt out of", "opt out", "opted out of"]],
-            ["Unit 37", "If you want to secure affordable flights for the Christmas holidays, it is essential to {0}.", "планировать наперед", ["plan ahead", "planned ahead"]],
-            ["Unit 37", "I think your proposal for the campaign is brilliant, but let's {0} the creative director first.", "посоветоваться с кем-то / показать идею", ["run it by", "run by", "ran it by"]],
-            ["Unit 37", "You don't need to sign the contract right this minute; take it home and {0}.", "отложить решение до утра / «переспать» с мыслью", ["sleep on it", "slept on it"]],
-            ["Unit 37", "Successful chess players never focus only on the immediate move; they always {0}.", "смотреть вперед / думать о будущем", ["think ahead", "thought ahead"]],
-            ["Unit 37", "Before quitting your stable job to open a cafe, make sure you have {0} all the risks.", "всесторонне продумать", ["thought through", "think through", "thought all the risks through"]],
-            ["Unit 37", "Before choosing which university to attend, she carefully {0} the pros and cons of each.", "взвесить все за и против", ["weighed up", "weigh up"]],
-
-            // --- UNIT 38 ---
-            ["Unit 38", "Both sides were stubborn during the dispute, and neither country was willing to {0}.", "отступить / пойти на уступки в споре", ["back down", "backed down"]],
-            ["Unit 38", "The investor promised to fund the project, so everyone was angry when he {0} the deal.", "нарушить соглашение / отказаться от сделки", ["backed out of", "back out of", "backed out", "back out"]],
-            ["Unit 38", "In a court of law, your claims mean nothing unless you can {0} them with solid evidence.", "подкреплять аргументами / подтверждать", ["back up", "back them up", "backed up"]],
-            ["Unit 38", "It is so sad that the two lifelong friends {0} over a minor misunderstanding about money.", "разругаться / поссориться", ["fell out", "fall out"]],
-            ["Unit 38", "Don't let his sarcastic comments {0} you; he's only trying to provoke a reaction.", "задевать за живое / действовать на нервы", ["get to", "got to"]],
-            ["Unit 38", "The children pestered their mother for ice cream all afternoon until she finally {0}.", "сдаться / уступить", ["gave in", "give in"]],
-            ["Unit 38", "Yes, I accidentally scratched your car a year ago, but how long will you {0} that me?", "ставить в вину / таить обиду", ["hold against", "hold that against", "held against"]],
-            ["Unit 38", "An insecure manager often tries to {0} his subordinates in public just to feel superior.", "унижать / принижать кого-либо", ["put down", "put his subordinates down"]],
-            ["Unit 38", "Several brave whistleblowers decided to {0} the unsafe working conditions in the factory.", "открыто выступать против", ["speak out against", "speak out", "spoke out against"]],
-            ["Unit 38", "When my two roommates start arguing about politics, I always go to my room and {0} it.", "не вмешиваться в", ["stay out of", "stayed out of"]],
-            ["Unit 38", "If our small community wants to save the local library from closing, we must all {0}.", "держаться вместе", ["stick together", "stuck together"]],
-            ["Unit 38", "When the new student was being unfairly teased, Sarah was the only one brave enough to {0} him.", "заступаться за / отстаивать", ["stick up for", "stuck up for"]],
-
-            // --- UNIT 39 ---
-            ["Unit 39", "My father was initially opposed to lending me his car, but I managed to {0} him.", "переубедить / склонить на свою сторону (b...)", ["bring round", "bring him round", "brought round", "brought him round", "talk round", "talk around"]],
-            ["Unit 39", "Environmental activist groups have been {0} stricter laws against river pollution for years.", "настойчиво добиваться", ["pressing for", "press for", "pressed for"]],
-            ["Unit 39", "During the interview, the spokesperson managed to {0} the charity's message very effectively.", "доходчиво донести / убедительно изложить (p...)", ["put across", "put over", "put the charity's message across", "get across"]],
-            ["Unit 39", "At yesterday's board meeting, several innovative proposals were {0} for reducing costs.", "выдвигать (теорию, предложение)", ["put forward", "puts forward"]],
-            ["Unit 39", "The union representative decided to {0} the revised pay offer the members for a vote.", "изложить предложение на чей-либо суд", ["put to", "put the revised pay offer to"]],
-            ["Unit 39", "Since we were short of volunteers for the charity fair, the principal managed to {0} several parents.", "завлечь / втянуть в участие", ["rope in", "roped in"]],
-            ["Unit 39", "I had no intention of buying a new coat, but the persuasive assistant {0} me buying a leather jacket.", "уговорить на что-либо", ["talked into", "talk into", "talked me into"]],
-            ["Unit 39", "When Jack announced his crazy plan to sail across the ocean alone, his friends tried to {0} him it.", "отговорить от чего-либо", ["talk out of", "talk him out of", "talked out of"]],
-            ["Unit 39", "The client refused to sign at first, but after an hour of negotiation, we finally {0} her.", "переубедить долгими уговорами (t...)", ["talked round", "talked around", "talk round", "talk around", "talked her round", "talked her around", "brought round"]]
-        ];
-
-        // Состояние приложения
-        let shuffledPool = [];      // Все вопросы в перемешанном порядке
-        let currentBatchIndex = 0;  // 0: 1..100, 1: 101..200, 2: 201..300 (с добивкой до 100)
-        let activeTests = [];       // Массив из 5 тестов по 20 вопросов
-        let currentTestIdx = 0;     // Индекс открытой вкладки (0..4)
-        
-        // Состояние ответов пользователя: ключ = id вопроса в текущем наборе из 100
-        let userState = {};
-
-        // Функция перемешивания Фишера-Йетса
-        function shuffleArray(arr) {
-            const copy = [...arr];
-            for (let i = copy.length - 1; i > 0; i--) {
-                const j = Math.floor(Math.random() * (i + 1));
-                [copy[i], copy[j]] = [copy[j], copy[i]];
-            }
-            return copy;
-        }
-
-        // Инициализация при загрузке
-        function initApp() {
-            // Присваиваем каждому вопросу постоянный ID и перемешиваем всю базу
-            const indexedDB = RAW_DATABASE.map((item, idx) => ({
-                id: idx,
-                unit: item[0],
-                sentence: item[1],
-                hintRu: item[2],
-                answers: item[3]
-            }));
-            shuffledPool = shuffleArray(indexedDB);
-            buildBatchTests(0);
-        }
-
-        // Построение 5 тестов по 20 вопросов (100 вопросов) из выбранного батча
-        function buildBatchTests(batchIdx) {
-            currentBatchIndex = batchIdx;
-            updateBatchButtonsUI();
-
-            let slice100 = [];
-            if (batchIdx === 0) {
-                slice100 = shuffledPool.slice(0, 100);
-            } else if (batchIdx === 1) {
-                slice100 = shuffledPool.slice(100, 200);
-            } else {
-                // В 3-м сете берем оставшиеся (200..257) и добиваем случайными из первых 200 до ровных 100
-                const remaining = shuffledPool.slice(200);
-                const filler = shuffleArray(shuffledPool.slice(0, 200)).slice(0, 100 - remaining.length);
-                slice100 = [...remaining, ...filler];
-            }
-
-            // Разбиваем 100 вопросов на 5 тестов по 20
-            activeTests = [];
-            for (let t = 0; t < 5; t++) {
-                activeTests.push(slice100.slice(t * 20, (t + 1) * 20));
-            }
-
-            userState = {};
-            currentTestIdx = 0;
-            renderTabs();
-            renderCurrentTest();
-            updateScoresUI();
-        }
-
-        // Полное перемешивание всей базы по кнопке "Перемешать всё"
-        function shuffleAllAndCreateTests() {
-            shuffledPool = shuffleArray(shuffledPool);
-            buildBatchTests(0);
-        }
-
-        function switchPoolBatch(batchIdx) {
-            buildBatchTests(batchIdx);
-        }
-
-        function updateBatchButtonsUI() {
-            for (let i = 0; i < 3; i++) {
-                const btn = document.getElementById(`batchBtn${i}`);
-                if (!btn) continue;
-                if (i === currentBatchIndex) {
-                    btn.className = "px-2.5 py-1.5 rounded-lg transition-all bg-indigo-600 text-white shadow-sm font-semibold";
-                } else {
-                    btn.className = "px-2.5 py-1.5 rounded-lg transition-all text-slate-600 dark:text-slate-400 hover:text-slate-900 dark:hover:text-white";
-                }
-            }
-        }
-
-        // Рендер вкладок Тест 1 .. Тест 5
-        function renderTabs() {
-            const container = document.getElementById('testTabsContainer');
-            container.innerHTML = '';
-
-            for (let t = 0; t < 5; t++) {
-                const scoreInTest = getTestScore(t);
-                const isCurrent = t === currentTestIdx;
-                
-                const btn = document.createElement('button');
-                btn.onclick = () => selectTestTab(t);
-                btn.className = isCurrent
-                    ? "px-3.5 py-2 rounded-xl bg-indigo-600 text-white text-xs sm:text-sm font-bold shadow-sm transition-all flex items-center gap-2"
-                    : "px-3.5 py-2 rounded-xl bg-slate-100 dark:bg-slate-800 hover:bg-slate-200 dark:hover:bg-slate-700 text-slate-700 dark:text-slate-300 text-xs sm:text-sm font-semibold transition-all flex items-center gap-2";
-
-                const badgeClass = isCurrent
-                    ? "px-1.5 py-0.5 text-[11px] rounded-md bg-indigo-800/80 text-indigo-100"
-                    : (scoreInTest === 20 
-                        ? "px-1.5 py-0.5 text-[11px] rounded-md bg-emerald-500 text-white" 
-                        : "px-1.5 py-0.5 text-[11px] rounded-md bg-slate-200 dark:bg-slate-700 text-slate-600 dark:text-slate-300");
-
-                btn.innerHTML = `
-                    <span>Тест ${t + 1}</span>
-                    <span class="${badgeClass}">${scoreInTest}/20</span>
-                `;
-                container.appendChild(btn);
-            }
-
-            document.getElementById('bottomTestIndicator').textContent = `Тест ${currentTestIdx + 1} из 5 (Вопросы ${currentTestIdx * 20 + 1}–${(currentTestIdx + 1) * 20})`;
-            document.getElementById('prevTestBtn').disabled = currentTestIdx === 0;
-            document.getElementById('prevTestBtn').style.opacity = currentTestIdx === 0 ? '0.4' : '1';
-            document.getElementById('nextTestBtn').disabled = currentTestIdx === 4;
-            document.getElementById('nextTestBtn').style.opacity = currentTestIdx === 4 ? '0.4' : '1';
-        }
-
-        function selectTestTab(idx) {
-            currentTestIdx = idx;
-            renderTabs();
-            renderCurrentTest();
-            updateScoresUI();
-            window.scrollTo({ top: 0, behavior: 'smooth' });
-        }
-
-        function prevTest() {
-            if (currentTestIdx > 0) selectTestTab(currentTestIdx - 1);
-        }
-
-        function nextTest() {
-            if (currentTestIdx < 4) selectTestTab(currentTestIdx + 1);
-        }
-
-        // Нормализация строки для гибкого сравнения ответов
-        function normalizeAnswer(str) {
-            return str
-                .toLowerCase()
-                .trim()
-                .replace(/['’]/g, "")
-                .replace(/\s+/g, " ")
-                .replace(/^to\s+/, ""); // убираем частицу to, если пользователь ввел инфинитив с to
-        }
-
-        // Проверка, подходит ли ответ пользователя
-        function isUserAnswerValid(userRaw, validAnswers) {
-            const normUser = normalizeAnswer(userRaw);
-            if (!normUser) return false;
-
-            for (const ans of validAnswers) {
-                const normValid = normalizeAnswer(ans);
-                if (normUser === normValid) return true;
-                // Также разрешаем вариант с дефисом и без дефиса (напр. break-in / break in)
-                if (normUser.replace(/-/g, " ") === normValid.replace(/-/g, " ")) return true;
-            }
-            return false;
-        }
-
-        // Рендер 20 вопросов активного теста
-        function renderCurrentTest() {
-            const container = document.getElementById('questionsContainer');
-            container.innerHTML = '';
-
-            const questions = activeTests[currentTestIdx];
-
-            questions.forEach((q, idxInTest) => {
-                const globalNum = currentTestIdx * 20 + idxInTest + 1;
-                const stateKey = `${currentTestIdx}_${idxInTest}`;
-                const st = userState[stateKey] || { value: '', status: 'unanswered', hintLen: 0 };
-
-                const parts = q.sentence.split('{0}');
-                const beforeText = parts[0] || '';
-                const afterText = parts[1] || '';
-
-                // Определяем цветовую схему карточки в зависимости от статуса
-                let cardBorder = "border-slate-200 dark:border-slate-800 bg-white dark:bg-slate-900";
-                let inputStyle = "border-slate-300 dark:border-slate-700 bg-slate-50 dark:bg-slate-800 text-slate-900 dark:text-white";
-                
-                if (st.status === 'correct') {
-                    cardBorder = "border-emerald-500/70 dark:border-emerald-500/60 bg-emerald-50/30 dark:bg-emerald-950/20";
-                    inputStyle = "border-emerald-500 bg-emerald-50 dark:bg-emerald-950/60 text-emerald-800 dark:text-emerald-200 font-semibold";
-                } else if (st.status === 'wrong') {
-                    cardBorder = "border-rose-500/70 dark:border-rose-500/60 bg-rose-50/30 dark:bg-rose-950/20";
-                    inputStyle = "border-rose-500 bg-rose-50 dark:bg-rose-950/60 text-rose-800 dark:text-rose-200 font-semibold";
-                } else if (st.status === 'revealed') {
-                    cardBorder = "border-amber-500/70 dark:border-amber-500/60 bg-amber-50/30 dark:bg-amber-950/20";
-                    inputStyle = "border-amber-500 bg-amber-50 dark:bg-amber-950/60 text-amber-800 dark:text-amber-200 font-semibold";
-                }
-
-                const card = document.createElement('div');
-                card.id = `card_${stateKey}`;
-                card.className = `question-card rounded-2xl border p-4 sm:p-5 shadow-sm transition-all ${cardBorder}`;
-
-                card.innerHTML = `
-                    <div class="flex flex-col sm:flex-row sm:items-start justify-between gap-3">
-                        <div class="flex items-start gap-3 flex-1">
-                            <span class="inline-flex items-center justify-center w-7 h-7 rounded-lg bg-slate-100 dark:bg-slate-800 text-slate-600 dark:text-slate-400 text-xs font-bold shrink-0 mt-0.5">
-                                ${globalNum}
-                            </span>
-                            <div class="text-sm sm:text-base leading-relaxed text-slate-800 dark:text-slate-200 flex-1">
-                                <span>${beforeText}</span>
-                                <span class="inline-flex flex-wrap items-center gap-1.5 mx-1 my-0.5 align-baseline">
-                                    <input 
-                                        type="text" 
-                                        id="input_${stateKey}"
-                                        value="${escapeHtml(st.value)}"
-                                        placeholder="впишите глагол..."
-                                        autocomplete="off"
-                                        autocapitalize="off"
-                                        spellcheck="false"
-                                        oninput="handleInputChange('${stateKey}', this.value)"
-                                        onkeydown="if(event.key === 'Enter') checkSingleQuestion('${stateKey}')"
-                                        class="input-blank px-3 py-1 rounded-xl border text-sm sm:text-base w-44 sm:w-52 ${inputStyle}"
-                                    />
-                                    <span class="text-xs sm:text-sm font-semibold text-indigo-600 dark:text-indigo-400 bg-indigo-50 dark:bg-indigo-950/70 px-2.5 py-0.5 rounded-lg border border-indigo-200/60 dark:border-indigo-800/60">
-                                        (${q.hintRu})
-                                    </span>
-                                </span>
-                                <span>${afterText}</span>
-                            </div>
-                        </div>
-
-                        <!-- Кнопки проверки и подсказки для конкретного предложения -->
-                        <div class="flex items-center gap-1.5 self-end sm:self-center shrink-0">
-                            <span class="text-[11px] font-medium px-2 py-0.5 rounded bg-slate-100 dark:bg-slate-800 text-slate-500 dark:text-slate-400 mr-1">
-                                ${q.unit}
-                            </span>
-                            <button onclick="giveLetterHint('${stateKey}')" class="px-2.5 py-1.5 rounded-lg bg-slate-100 dark:bg-slate-800 hover:bg-slate-200 dark:hover:bg-slate-700 text-slate-600 dark:text-slate-300 text-xs font-medium transition-all" title="Открыть следующую букву">
-                                💡 Буква
-                            </button>
-                            <button onclick="checkSingleQuestion('${stateKey}')" class="px-3 py-1.5 rounded-lg bg-indigo-600 hover:bg-indigo-500 text-white text-xs font-semibold shadow-sm transition-all">
-                                Проверить
-                            </button>
-                        </div>
-                    </div>
-
-                    <!-- Блок обратной связи (показывается после проверки) -->
-                    <div id="feedback_${stateKey}" class="${st.status === 'unanswered' ? 'hidden' : 'mt-3 pt-2.5 border-t border-slate-200/60 dark:border-slate-800/60 text-xs sm:text-sm flex flex-wrap items-center justify-between gap-2'}">
-                        ${renderFeedbackHTML(st, q)}
-                    </div>
-                `;
-
-                container.appendChild(card);
-            });
-        }
-
-        function renderFeedbackHTML(st, q) {
-            if (st.status === 'unanswered') return '';
-            const primaryAns = q.answers[0];
-            const otherForms = q.answers.slice(1, 3).join(' / ');
-
-            if (st.status === 'correct') {
-                return `
-                    <div class="text-emerald-700 dark:text-emerald-400 font-semibold flex items-center gap-1.5">
-                        <span>✓ Верно! Отличная работа:</span>
-                        <span class="underline decoration-emerald-500/50">${primaryAns}</span>
-                        ${otherForms ? `<span class="text-xs text-slate-500 dark:text-slate-400 font-normal">(также: ${otherForms})</span>` : ''}
-                    </div>
-                `;
-            } else if (st.status === 'wrong') {
-                return `
-                    <div class="text-rose-600 dark:text-rose-400 font-semibold flex flex-wrap items-center gap-1.5">
-                        <span>✗ Ошибка. Правильный ответ:</span>
-                        <span class="px-2 py-0.5 rounded bg-rose-100 dark:bg-rose-900/50 text-rose-800 dark:text-rose-200 font-bold">${primaryAns}</span>
-                        ${otherForms ? `<span class="text-xs text-slate-500 dark:text-slate-400 font-normal">(или по контексту: ${otherForms})</span>` : ''}
-                    </div>
-                `;
-            } else if (st.status === 'revealed') {
-                return `
-                    <div class="text-amber-700 dark:text-amber-400 font-semibold flex items-center gap-1.5">
-                        <span>👁 Ответ показан:</span>
-                        <span class="px-2 py-0.5 rounded bg-amber-100 dark:bg-amber-900/50 text-amber-900 dark:text-amber-200 font-bold">${primaryAns}</span>
-                    </div>
-                `;
-            }
-            return '';
-        }
-
-        function handleInputChange(stateKey, val) {
-            if (!userState[stateKey]) {
-                userState[stateKey] = { value: val, status: 'unanswered', hintLen: 0 };
-            } else {
-                userState[stateKey].value = val;
-            }
-        }
-
-        // Проверка одного конкретного вопроса
-        function checkSingleQuestion(stateKey) {
-            const [tIdx, qIdx] = stateKey.split('_').map(Number);
-            const q = activeTests[tIdx][qIdx];
-            const inputEl = document.getElementById(`input_${stateKey}`);
-            const currentVal = inputEl ? inputEl.value : (userState[stateKey]?.value || '');
-
-            const isCorrect = isUserAnswerValid(currentVal, q.answers);
-
-            userState[stateKey] = {
-                value: currentVal,
-                status: isCorrect ? 'correct' : 'wrong',
-                hintLen: userState[stateKey]?.hintLen || 0
-            };
-
-            updateSingleCardUI(stateKey, q);
-            renderTabs();
-            updateScoresUI();
-        }
-
-        // Подсказка по одной букве
-        function giveLetterHint(stateKey) {
-            const [tIdx, qIdx] = stateKey.split('_').map(Number);
-            const q = activeTests[tIdx][qIdx];
-            const targetAns = q.answers[0];
-
-            const currentSt = userState[stateKey] || { value: '', status: 'unanswered', hintLen: 0 };
-            const nextLen = Math.min(targetAns.length, (currentSt.hintLen || 0) + 1);
-            const hintedSub = targetAns.slice(0, nextLen);
-
-            userState[stateKey] = {
-                value: hintedSub,
-                status: 'unanswered',
-                hintLen: nextLen
-            };
-
-            const inputEl = document.getElementById(`input_${stateKey}`);
-            if (inputEl) {
-                inputEl.value = hintedSub;
-                inputEl.focus();
-            }
-        }
-
-        // Обновление стилей одной карточки без перерисовки всего списка
-        function updateSingleCardUI(stateKey, q) {
-            const st = userState[stateKey];
-            const card = document.getElementById(`card_${stateKey}`);
-            const input = document.getElementById(`input_${stateKey}`);
-            const fb = document.getElementById(`feedback_${stateKey}`);
-
-            if (!card || !input || !fb) return;
-
-            let cardBorder = "border-slate-200 dark:border-slate-800 bg-white dark:bg-slate-900";
-            let inputStyle = "border-slate-300 dark:border-slate-700 bg-slate-50 dark:bg-slate-800 text-slate-900 dark:text-white";
-
-            if (st.status === 'correct') {
-                cardBorder = "border-emerald-500/70 dark:border-emerald-500/60 bg-emerald-50/30 dark:bg-emerald-950/20";
-                inputStyle = "border-emerald-500 bg-emerald-50 dark:bg-emerald-950/60 text-emerald-800 dark:text-emerald-200 font-semibold";
-            } else if (st.status === 'wrong') {
-                cardBorder = "border-rose-500/70 dark:border-rose-500/60 bg-rose-50/30 dark:bg-rose-950/20";
-                inputStyle = "border-rose-500 bg-rose-50 dark:bg-rose-950/60 text-rose-800 dark:text-rose-200 font-semibold";
-            } else if (st.status === 'revealed') {
-                cardBorder = "border-amber-500/70 dark:border-amber-500/60 bg-amber-50/30 dark:bg-amber-950/20";
-                inputStyle = "border-amber-500 bg-amber-50 dark:bg-amber-950/60 text-amber-800 dark:text-amber-200 font-semibold";
-            }
-
-            card.className = `question-card rounded-2xl border p-4 sm:p-5 shadow-sm transition-all ${cardBorder}`;
-            input.className = `input-blank px-3 py-1 rounded-xl border text-sm sm:text-base w-44 sm:w-52 ${inputStyle}`;
-            input.value = st.value;
-
-            fb.className = "mt-3 pt-2.5 border-t border-slate-200/60 dark:border-slate-800/60 text-xs sm:text-sm flex flex-wrap items-center justify-between gap-2";
-            fb.innerHTML = renderFeedbackHTML(st, q);
-        }
-
-        // Проверить все 20 вопросов в текущем тесте
-        function checkAllInCurrentTest() {
-            const questions = activeTests[currentTestIdx];
-            questions.forEach((q, idx) => {
-                const stateKey = `${currentTestIdx}_${idx}`;
-                checkSingleQuestion(stateKey);
-            });
-        }
-
-        // Показать все ответы в текущем тесте
-        function revealAllInCurrentTest() {
-            const questions = activeTests[currentTestIdx];
-            questions.forEach((q, idx) => {
-                const stateKey = `${currentTestIdx}_${idx}`;
-                userState[stateKey] = {
-                    value: q.answers[0],
-                    status: 'revealed',
-                    hintLen: q.answers[0].length
-                };
-                updateSingleCardUI(stateKey, q);
-            });
-            renderTabs();
-            updateScoresUI();
-        }
-
-        // Сбросить ответы текущего теста
-        function resetCurrentTest() {
-            const questions = activeTests[currentTestIdx];
-            questions.forEach((_, idx) => {
-                const stateKey = `${currentTestIdx}_${idx}`;
-                delete userState[stateKey];
-            });
-            renderTabs();
-            renderCurrentTest();
-            updateScoresUI();
-        }
-
-        function getTestScore(tIdx) {
-            let score = 0;
-            for (let i = 0; i < 20; i++) {
-                const st = userState[`${tIdx}_${i}`];
-                if (st && st.status === 'correct') score++;
-            }
-            return score;
-        }
-
-        function getTotalScore() {
-            let total = 0;
-            for (let t = 0; t < 5; t++) {
-                total += getTestScore(t);
-            }
-            return total;
-        }
-
-        function updateScoresUI() {
-            const currentScore = getTestScore(currentTestIdx);
-            const totalScore = getTotalScore();
-
-            document.getElementById('currentTestScore').textContent = `${currentScore} / 20`;
-            document.getElementById('totalTestsScore').textContent = `${totalScore} / 100`;
-
-            const percent = Math.round((currentScore / 20) * 100);
-            document.getElementById('testProgressBar').style.width = `${percent}%`;
-        }
-
-        function toggleTheme() {
-            document.documentElement.classList.toggle('dark');
-        }
-
-        function escapeHtml(str) {
-            return String(str)
-                .replace(/&/g, "&amp;")
-                .replace(/</g, "&lt;")
-                .replace(/>/g, "&gt;")
-                .replace(/"/g, "&quot;");
-        }
-
-        window.onload = initApp;
-    </script>
+            <div class="sentence">
+                ${formattedSentence} <span class="ru-hint">(${item.ru})</span>
+            </div>
+            <div class="input-row">
+                <input type="text"
+                       id="inp-${i}"
+                       class="answer-input"
+                       placeholder="Впиши фразовый глагол на английском..."
+                       value="${st.val ? st.val.replace(/"/g, '&quot;') : ''}"
+                       oninput="userState[${i}] = {...(userState[${i}]||{}), val: this.value}"
+                       onkeydown="if(event.key==='Enter') checkItem(${i})">
+                <button class="btn btn-sm btn-primary" onclick="checkItem(${i})">Проверить</button>
+                <button class="btn btn-sm btn-outline" onclick="giveHint(${i})" title="Открыть пару букв">💡 Буква</button>
+            </div>
+            <div class="feedback" id="fb-${i}"></div>
+        `;
+        container.appendChild(card);
+        renderQuestionState(i);
+    }
+
+    updateScore();
+}
+
+init();
+</script>
 </body>
 </html>
